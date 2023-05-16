@@ -4,9 +4,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static Modloader64.Mupen64plus.VideoExtension;
+using static Modloader2.Mupen64plus.VideoExtension;
 
-namespace Modloader64.Mupen64plus;
+namespace Modloader2.Mupen64plus;
 
 public unsafe class Frontend
 {

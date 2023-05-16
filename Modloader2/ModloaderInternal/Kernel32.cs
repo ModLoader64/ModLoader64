@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modloader64.Modloader64Internal; 
+namespace Modloader2.Modloader2Internal; 
 public static class Kernel32 {
     [DllImport("kernel32.dll")]
     public static extern IntPtr LoadLibrary(string DllToLoad);

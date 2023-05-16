@@ -1,4 +1,4 @@
-﻿using Modloader64.Common;
+﻿using Modloader2.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modloader64.Mupen64plus;
+namespace Modloader2.Mupen64plus;
 
 /// <summary>
 /// Enumeration used for message levels

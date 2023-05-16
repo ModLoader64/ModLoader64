@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using static Modloader64.Mupen64plus.Frontend;
+using static Modloader2.Mupen64plus.Frontend;
 
-namespace Modloader64.Mupen64plus;
+namespace Modloader2.Mupen64plus;
 
 public unsafe class Config {
     public delegate void SectionListCallbackDelegate(IntPtr Context, char* SectionName);

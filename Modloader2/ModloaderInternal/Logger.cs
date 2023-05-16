@@ -1,11 +1,11 @@
-using Modloader64.Common;
+using Modloader2.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modloader64.Modloader64Internal;
+namespace Modloader2.Modloader2Internal;
 
 /// <summary>
 /// Singleton for internal Modloader logging

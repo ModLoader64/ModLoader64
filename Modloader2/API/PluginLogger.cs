@@ -1,11 +1,11 @@
-﻿using Modloader64.Common;
+﻿using Modloader2.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modloader64.API;
+namespace Modloader2.API;
 
 // TODO: make the API aware of the plugin name
 

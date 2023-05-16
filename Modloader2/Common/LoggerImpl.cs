@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modloader64.Common;
+namespace Modloader2.Common;
 
 /// <summary>
 /// Implementation of all other loggers
