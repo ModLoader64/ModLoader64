@@ -37,6 +37,16 @@ public static class GlobalCallbacks {
             Core.EmulatedMemory.Write16(0x8011A5FEU, 0x20);
             Core.EmulatedMemory.Write64(0x8011A670U, 0xFFFFFFFFFFFFFF);
 
+            Core.EmulatedMemory.Write32(0x84000000, 0xDEADBEEF);
+            if (Core.EmulatedMemory.Read32(0x84000000) != 0) {
+                Core.Logger.Debug("test failed");
+            }
+
+            Core.EmulatedMemory.Write64(0x807FFFFC, 0xDEADBEEF0F00DBAD);
+            if (Core.EmulatedMemory.Read64(0x807FFFFC) != 0) {
+                Core.Logger.Debug("test failed");
+            }
+
             Memory.InvalidateCachedCode();
         }
     }

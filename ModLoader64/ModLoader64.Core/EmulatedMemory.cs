@@ -20,12 +20,12 @@ public static unsafe class EmulatedMemory {
     public static bool MemorySafetyCheck(ref uint address, ulong size) {
         address &= VADDR_MASK;
         if (address < 0 || address > MEMORY_SIZE) {
-            Logger.Error("Tried to access emulated memory that is out of bounds!");
+            Logger.Error($"Tried to access emulated memory that is out of bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')}!");
             return false;
         }
 
         if (address + size < 0 || address + size > MEMORY_SIZE) {
-            Logger.Error("Tried to access emulated memory which exceeds memory bounds!");
+            Logger.Error($"Tried to access emulated memory which exceeds memory bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')} with size 0x{size:X}");
             return false;
         }
 
