@@ -2,28 +2,28 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace ModLoader64.Core; 
+namespace ModLoader64.Core;
 
 public static unsafe class EmulatedMemory {
-    private const uint VADDR_MASK = 0x0FFFFFFF;
-    private const uint MEMORY_SIZE = 0x00800000; //0x03E00000;
-    private static byte* _Memory = null;
+    private const u32 VADDR_MASK = 0x0FFFFFFF;
+    private const u32 MEMORY_SIZE = 0x00800000; //0x03E00000;
+    private static u8* _Memory = null;
 
-    private static byte* Memory {
+    private static u8* Memory {
         get {
             if (_Memory == null) {
-                _Memory = (byte*)Mupen64plus.Memory.Memory_GetBaseAddress();
+                _Memory = (u8*)Mupen64plus.Memory.Memory_GetBaseAddress();
             }
             return _Memory;
         }
     }
 
-    private static void EmitStackTrace(int skip) {
+    private static void EmitStackTrace(s32 skip) {
         Logger.Error(new System.Diagnostics.StackTrace(skip, true).ToString());
     }
 
-    public static bool MemorySafetyCheck(ref uint address, int size) {
-        int skip = 2;
+    public static bool MemorySafetyCheck(ref u32 address, s32 size) {
+        s32 skip = 2;
 
         address &= VADDR_MASK;
         if (address < 0 || address > MEMORY_SIZE) {
@@ -41,156 +41,165 @@ public static unsafe class EmulatedMemory {
         return true;
     }
 
-    private static uint RotateAddress(uint address) {
+    private static u32 RotateAddress(u32 address) {
         return ((address >> 2) * 4) + (3 - (address & 3));
     }
 
-    public static byte Read8(uint address) {
+    public static byte Read8(u32 address) {
         address = RotateAddress(address);
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<byte>())) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return 0;
         }
 
         return Memory[address];
     }
 
-    public static ushort Read16(uint address) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<ushort>())) {
+    public static u16 Read16(u32 address) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return 0;
         }
 
-        uint lo = RotateAddress(address);
-        uint hi = RotateAddress(address + 1);
+        u32 lo = RotateAddress(address);
+        u32 hi = RotateAddress(address + 1);
 
-        return (ushort)(((ushort)Memory[lo] << 8) | (ushort)Memory[hi]);
+        return (u16)(((u16)Memory[lo] << 8) | (u16)Memory[hi]);
     }
 
-    public static uint Read32(uint address) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<uint>())) {
+    public static u32 Read32(u32 address) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
 
-        return *((uint*)(Memory + address));
+        return *((u32*)(Memory + address));
     }
 
-    public static UInt64 Read64(uint address) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<UInt64>())) {
+    public static u64 Read64(u32 address) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return 0;
         }
 
-        UInt64 lo = *((uint*)(Memory + address + 4));
-        UInt64 hi = *((uint*)(Memory + address));
+        u64 lo = *((u32*)(Memory + address + 4));
+        u64 hi = *((u32*)(Memory + address));
         return (hi << 32) | lo;
     }
 
-    public static float ReadF32(uint address) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<float>())) {
+    public static f32 ReadF32(u32 address) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f32>())) {
             return 0;
         }
 
-        return *((float*)(Memory + address));
+        return *((f32*)(Memory + address));
     }
 
-    public static double ReadF64(uint address) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<double>())) {
+    public static f64 ReadF64(u32 address) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f64>())) {
             return 0;
         }
 
-        Int64 lo = *((uint*)(Memory + address + 4));
-        Int64 hi = *((uint*)(Memory + address));
+        s64 lo = *((u32*)(Memory + address + 4));
+        s64 hi = *((u32*)(Memory + address));
         return BitConverter.Int64BitsToDouble((hi << 32) | lo);
     }
 
-    public static void Write8(uint address, byte value) {
+    public static void Write8(u32 address, u8 value) {
         address = RotateAddress(address);
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<byte>())) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return;
         }
 
         Memory[address] = value;
     }
 
-    public static void Write16(uint address, ushort value) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<ushort>())) {
+    public static void Write16(u32 address, u16 value) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return;
         }
 
-        uint lo = RotateAddress(address);
-        uint hi = RotateAddress(address + 1);
+        u32 lo = RotateAddress(address);
+        u32 hi = RotateAddress(address + 1);
 
-        Memory[lo] = (byte)(value >> 8);
-        Memory[hi] = (byte)(value & 0xFF);
+        Memory[lo] = (u8)(value >> 8);
+        Memory[hi] = (u8)(value & 0xFF);
     }
 
-    public static void Write32(uint address, uint value) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<uint>())) {
+    public static void Write32(u32 address, u32 value) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
         }
 
-        *((uint*)(Memory + address)) = value;
+        *((u32*)(Memory + address)) = value;
     }
 
-    public static void Write64(uint address, UInt64 value) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<UInt64>())) {
+    public static void Write64(u32 address, u64 value) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
         }
 
-        UInt64 hi = value >> 32;
-        UInt64 lo = value & 0xFFFFFFFF;
-        *((uint*)(Memory + address + 4)) = (uint)lo;
-        *((uint*)(Memory + address)) = (uint)hi;
+        u64 hi = value >> 32;
+        u64 lo = value & 0xFFFFFFFF;
+        *((u32*)(Memory + address + 4)) = (u32)lo;
+        *((u32*)(Memory + address)) = (u32)hi;
     }
 
-    public static void WriteF32(uint address, float value) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<uint>())) {
+    public static void WriteF32(u32 address, f32 value) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
         }
-        *((float*)(Memory + address)) = value;
+        *((f32*)(Memory + address)) = value;
     }
 
-    public static void WriteF64(uint address, double value) {
-        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<UInt64>())) {
+    public static void WriteF64(u32 address, f64 value) {
+        if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
         }
 
-        UInt64 dirty = BitConverter.DoubleToUInt64Bits(value);
-        UInt64 hi = dirty >> 32;
-        UInt64 lo = dirty & 0xFFFFFFFF;
-        *((uint*)(Memory + address + 4)) = (uint)lo;
-        *((uint*)(Memory + address)) = (uint)hi;
+        u64 dirty = BitConverter.DoubleToUInt64Bits(value);
+        u64 hi = dirty >> 32;
+        u64 lo = dirty & 0xFFFFFFFF;
+        *((u32*)(Memory + address + 4)) = (u32)lo;
+        *((u32*)(Memory + address)) = (u32)hi;
     }
 
-    public static void Write<T>(uint address, T value) where T : unmanaged {
+    public static void Write<T>(u32 address, T value) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
-            throw new InvalidOperationException("T Must be a primitive type!");
+            throw new InvalidOperationException("T must be a primitive type!");
         }
 
-        int size = Unsafe.SizeOf<T>();
-        if (typeof(T) == typeof(float)) {
-            WriteF32(address, (float)(object)value);
+        if (typeof(T) == typeof(f32)) {
+            WriteF32(address, (f32)(object)value);
         }
-        else if (typeof(T) == typeof(double)) {
-            WriteF64(address, (double)(object)value);
+        else if (typeof(T) == typeof(f64)) {
+            WriteF64(address, (f64)(object)value);
+        }
+        else if (typeof(T) == typeof(u8)) {
+            Write8(address, (u8)(object)value);
+        }
+        else if (typeof(T) == typeof(s8)) {
+            Write8(address, (u8)((s8)(object)value));
+        }
+        else if (typeof(T) == typeof(u16)) {
+            Write16(address, (u16)(object)value);
+        }
+        else if (typeof(T) == typeof(s16)) {
+            Write16(address, (u16)((s16)(object)value));
+        }
+        else if (typeof(T) == typeof(u32)) {
+            Write32(address, (u32)(object)value);
+        }
+        else if (typeof(T) == typeof(s32)) {
+            Write32(address, (u32)((s32)(object)value));
+        }
+        else if (typeof(T) == typeof(u64)) {
+            Write64(address, (u64)(object)value);
+        }
+        else if (typeof(T) == typeof(s64)) {
+            Write64(address, (u64)((s64)(object)value));
         }
         else {
-            switch(size) {
-                case 1:
-                    Write8(address, (byte)(object)value);
-                    break;
-                case 2:
-                    Write16(address, (ushort)(object)value);
-                    break;
-                case 4:
-                    Write32(address, (uint)(object)value);
-                    break;
-                case 8:
-                    Write64(address, (UInt64)(object)value);
-                    break;
-                default:
-                    throw new InvalidOperationException($"T has an invalid size? {size}");
-            }
+            throw new InvalidOperationException("Unsupported type!");
         }
     }
+
 
     public static T Read<T>(uint address) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
@@ -198,10 +207,10 @@ public static unsafe class EmulatedMemory {
         }
 
         int size = Unsafe.SizeOf<T>();
-        if (typeof(T) == typeof(float)) {
+        if (typeof(T) == typeof(f32)) {
             return (T)(object)ReadF32(address);
         }
-        else if (typeof(T) == typeof(double)) {
+        else if (typeof(T) == typeof(f64)) {
             return (T)(object)ReadF64(address);
         }
         else {

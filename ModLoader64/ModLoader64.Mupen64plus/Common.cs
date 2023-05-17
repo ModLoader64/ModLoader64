@@ -104,7 +104,6 @@ public enum ButtonFlags : ushort {
     Z_TRIG = (1 << 5),
     B_BUTTON = (1 << 6),
     A_BUTTON = (1 << 7),
-
     R_CBUTTON = (1 << 8),
     L_CBUTTON = (1 << 9),
     D_CBUTTON = (1 << 10),
@@ -118,31 +117,31 @@ public enum ButtonFlags : ushort {
 [StructLayout(LayoutKind.Explicit, Size = 0x04)]
 public struct Buttons {
     [FieldOffset(0x00)] ButtonFlags Button;
-    [FieldOffset(0x02)] sbyte XAxis;
-    [FieldOffset(0x03)] sbyte YAxis;
+    [FieldOffset(0x02)] s8 XAxis;
+    [FieldOffset(0x03)] s8 YAxis;
 };
 
 [StructLayout(LayoutKind.Explicit, Size = 0x08)]
 public struct CheatCode {
-    [FieldOffset(0x00)] public uint Address;
-    [FieldOffset(0x04)] public uint Value;
+    [FieldOffset(0x00)] public u32 Address;
+    [FieldOffset(0x04)] public u32 Value;
 };
 
 [StructLayout(LayoutKind.Explicit, Size = 0x138)]
 public unsafe struct RomSettings {
     [FieldOffset(0x000)] public char* GoodName;
     [FieldOffset(0x100)] public char* MD5;
-    [FieldOffset(0x121)] public byte SaveType;
-    [FieldOffset(0x122)] public byte Status;
-    [FieldOffset(0x123)] public byte Players;
-    [FieldOffset(0x124)] public byte Rumble;
-    [FieldOffset(0x125)] public byte TransferPak;
-    [FieldOffset(0x126)] public byte MemPak;
-    [FieldOffset(0x127)] public byte BioPak;
-    [FieldOffset(0x128)] public byte DisableExtraMemory;
-    [FieldOffset(0x12C)] public uint CountPerOp;
-    [FieldOffset(0x130)] public uint SiDmaDuration;
-    [FieldOffset(0x134)] public uint AiDmaModifier;
+    [FieldOffset(0x121)] public u8 SaveType;
+    [FieldOffset(0x122)] public u8 Status;
+    [FieldOffset(0x123)] public u8 Players;
+    [FieldOffset(0x124)] public u8 Rumble;
+    [FieldOffset(0x125)] public u8 TransferPak;
+    [FieldOffset(0x126)] public u8 MemPak;
+    [FieldOffset(0x127)] public u8 BioPak;
+    [FieldOffset(0x128)] public u8 DisableExtraMemory;
+    [FieldOffset(0x12C)] public u32 CountPerOp;
+    [FieldOffset(0x130)] public u32 SiDmaDuration;
+    [FieldOffset(0x134)] public u32 AiDmaModifier;
 }
 
 public unsafe class Common {

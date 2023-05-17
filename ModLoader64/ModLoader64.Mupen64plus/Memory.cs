@@ -13,7 +13,7 @@ public static class Memory {
     public extern static IntPtr ROM_GetBaseAddress();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint ROM_GetBaseSize();
+    public extern static u32 ROM_GetBaseSize();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void InvalidateCachedCode();

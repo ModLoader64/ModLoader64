@@ -10,13 +10,13 @@ public unsafe class Config {
     public delegate void ParameterListCallbackDelegate(IntPtr Context, char* ParamName, M64Type ParamType);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigExternalOpen(char* FileName, IntPtr* Handle);
+    public extern static M64Error ConfigExternalOpen(char* FileName, IntPtr Handle);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error ConfigExternalClose(IntPtr Handle);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigExternalGetParameter(IntPtr Handle, char* SectionName, char* ParamName, char* ParamPtr, int ParamMaxLength);
+    public extern static M64Error ConfigExternalGetParameter(IntPtr Handle, char* SectionName, char* ParamName, char* ParamPtr, s32 ParamMaxLength);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error ConfigListSections(IntPtr context, SectionListCallbackDelegate SectionListCallback);
@@ -28,7 +28,7 @@ public unsafe class Config {
     public extern static M64Error ConfigListParameters(IntPtr ConfigSectionHandle, IntPtr Context, ParameterListCallbackDelegate ParameterListCallback);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int ConfigHasUnsavedChanges(char* SectionName);
+    public extern static s32 ConfigHasUnsavedChanges(char* SectionName);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error ConfigDeleteSection(char* SectionName);
@@ -49,7 +49,7 @@ public unsafe class Config {
     public extern static M64Error ConfigSetParameterHelp(IntPtr ConfigSectionHandle, char* ParamName, char* ParamHelp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigGetParameter(IntPtr ConfigSectionHandle, char* ParamName, M64Type ParamType, IntPtr ParamValue, int MaxSize);
+    public extern static M64Error ConfigGetParameter(IntPtr ConfigSectionHandle, char* ParamName, M64Type ParamType, IntPtr ParamValue, s32 MaxSize);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error ConfigGetParameterType(IntPtr ConfigSectionHandle, char* ParamName, M64Type* ParamType);
@@ -58,25 +58,25 @@ public unsafe class Config {
     public extern static char* ConfigGetParameterHelp(IntPtr ConfigSectionHandle, char* ParamName);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigSetDefaultInt(IntPtr ConfigSectionHandle, char* ParamName, int ParamValue, char* ParamHelp);
+    public extern static M64Error ConfigSetDefaultInt(IntPtr ConfigSectionHandle, char* ParamName, s32 ParamValue, char* ParamHelp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigSetDefaultFloat(IntPtr ConfigSectionHandle, char* ParamName, float ParamValue, char* ParamHelp);
+    public extern static M64Error ConfigSetDefaultFloat(IntPtr ConfigSectionHandle, char* ParamName, f32 ParamValue, char* ParamHelp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigSetDefaultBool(IntPtr ConfigSectionHandle, char* ParamName, int ParamValue, char* ParamHelp);
+    public extern static M64Error ConfigSetDefaultBool(IntPtr ConfigSectionHandle, char* ParamName, s32 ParamValue, char* ParamHelp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error ConfigSetDefaultString(IntPtr ConfigSectionHandle, char* ParamName, char* ParamValue, char* ParamHelp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int ConfigGetParamInt(IntPtr ConfigSectionHandle, char* ParamName);
+    public extern static s32 ConfigGetParamInt(IntPtr ConfigSectionHandle, char* ParamName);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static float ConfigGetParamFloat(IntPtr ConfigSectionHandle, char* ParamName);
+    public extern static f32 ConfigGetParamFloat(IntPtr ConfigSectionHandle, char* ParamName);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int ConfigGetParamBool(IntPtr ConfigSectionHandle, char* ParamName);
+    public extern static s32 ConfigGetParamBool(IntPtr ConfigSectionHandle, char* ParamName);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static char* ConfigGetParamString(IntPtr ConfigSectionHandle, char* ParamName);
@@ -97,8 +97,8 @@ public unsafe class Config {
     public extern static char* ConfigGetUserCachePath();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigSendNetplayConfig(char* Data, int Size);
+    public extern static M64Error ConfigSendNetplayConfig(char* Data, s32 Size);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error ConfigReceiveNetplayConfig(char* Data, int Size);
+    public extern static M64Error ConfigReceiveNetplayConfig(char* Data, s32 Size);
 }

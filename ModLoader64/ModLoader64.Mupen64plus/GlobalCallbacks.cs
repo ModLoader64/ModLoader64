@@ -21,29 +21,8 @@ public static class GlobalCallbacks {
     private extern static void PauseSetCallback(CommonCallbackDelegate callback);
 
     public static unsafe void OnFrame(int FrameCount) {
-        uint ptr = 0x801CA0D0 + 20;
-
         if (FrameCount > 200) {
-            Core.EmulatedMemory.Write8(0x8011A644U, 0);
-            Core.EmulatedMemory.Write8(0x8011A645U, 0);
-            Core.EmulatedMemory.Write8(0x8011A646U, 0);
-            for (uint index = 3; index < 24; index++) {
-                Core.EmulatedMemory.Write8(0x8011A644U + index, 1);
-            }
-            Core.EmulatedMemory.Write8(0x8011A648U, 0);
-            Core.EmulatedMemory.Write8(0x8011A649U, 0);
-            Core.EmulatedMemory.Write8(0x8011A64AU, 0);
-
-            Core.EmulatedMemory.Write16(0x8011A5FEU, 0x20);
-            Core.EmulatedMemory.Write64(0x8011A670U, 0xFFFFFFFFFFFFFF);
-
-            Core.EmulatedMemory.Write(0x80400000, 0xDEADBEEF0F00DBAD);
-            ulong var = Core.EmulatedMemory.Read64(0x80400000);
-            if (var != 0xDEADBEEF0F00DBAD) {
-                Core.Logger.Debug($"test failed {var:X}");
-            }
-
-            Memory.InvalidateCachedCode();
+            Core.EmulatedMemory.Write(0x8011A604, (u16)999);
         }
     }
 

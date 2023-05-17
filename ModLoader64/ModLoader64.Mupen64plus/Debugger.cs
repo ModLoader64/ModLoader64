@@ -64,9 +64,9 @@ public static unsafe class Debugger {
 
     [StructLayout(LayoutKind.Explicit, Size = 0x0C)]
     public struct Breakpoint {
-        [FieldOffset(0x00)] public uint Address;
-        [FieldOffset(0x04)] public uint EndAddress;
-        [FieldOffset(0x08)] public uint Flags;
+        [FieldOffset(0x00)] public u32 Address;
+        [FieldOffset(0x04)] public u32 EndAddress;
+        [FieldOffset(0x08)] public u32 Flags;
     };
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
@@ -79,59 +79,59 @@ public static unsafe class Debugger {
     public extern static M64Error DebugSetRunState(M64DebuggerRunState runstate);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int DebugGetState(M64DebuggerState statenum);
+    public extern static s32 DebugGetState(M64DebuggerState statenum);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static M64Error DebugStep();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugDecodeOp(uint instruction, char* op, char* args, int pc);
+    public extern static void DebugDecodeOp(u32 instruction, char* op, char* args, s32 pc);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemGetRecompInfo(M64DebuggerMemoryInfo recomp_type, uint address, int index);
+    public extern static void DebugMemGetRecompInfo(M64DebuggerMemoryInfo recomp_type, u32 address, s32 index);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int DebugMemGetMemInfo(M64DebuggerMemoryInfo mem_info_type, uint address);
+    public extern static s32 DebugMemGetMemInfo(M64DebuggerMemoryInfo mem_info_type, u32 address);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void DebugMemGetPointer(M64DebuggerMemoryPointerType mem_ptr_type);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DebugMemRead64(uint address);
+    public extern static u32 DebugMemRead64(u32 address);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DebugMemRead32(uint address);
+    public extern static u32 DebugMemRead32(u32 address);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DebugMemRead16(uint address);
+    public extern static u32 DebugMemRead16(u32 address);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DebugMemRead8(uint address);
+    public extern static u32 DebugMemRead8(u32 address);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite64(uint address, UInt64 value);
+    public extern static void DebugMemWrite64(u32 address, u64 value);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite32(uint address, uint value);
+    public extern static void DebugMemWrite32(u32 address, u32 value);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite16(uint address, ushort value);
+    public extern static void DebugMemWrite16(u32 address, u16 value);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite8(uint address, byte value);
+    public extern static void DebugMemWrite8(u32 address, u8 value);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void DebugGetCPUDataPtr(M64DebuggerCpuData cpu_data_type);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int DebugBreakpointLookup(uint address, uint size, uint flags);
+    public extern static s32 DebugBreakpointLookup(u32 address, u32 size, u32 flags);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int DebugBreakpointCommand(M64DebuggerBreakpointCommand command, uint index, Breakpoint* bkp);
+    public extern static s32 DebugBreakpointCommand(M64DebuggerBreakpointCommand command, u32 index, Breakpoint* bkp);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void DebugBreakpointTriggeredBy(UIntPtr flags, UIntPtr accessed);
     
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DebugVirtualToPhysical(uint address);
+    public extern static u32 DebugVirtualToPhysical(u32 address);
 }

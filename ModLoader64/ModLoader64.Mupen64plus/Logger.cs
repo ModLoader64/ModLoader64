@@ -38,7 +38,7 @@ public static class Logger
     /// <param name="message"></param>
     public static void Log(M64Message level, string context, string message)
     {
-        string output = $"[{context}] {M64MessageString[(int)level]}: {message}";
+        string output = $"[{context}] {M64MessageString[(s32)level]}: {message}";
         switch (level)
         {
             case M64Message.M64MSG_ERROR:

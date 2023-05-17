@@ -10,9 +10,9 @@ public static unsafe class Plugin {
     // TODO: the offsets will be different for 32 bit, we might need a better way to do this
     [StructLayout(LayoutKind.Explicit, Size = 0x58)]
     public struct AudioInfo {
-        [FieldOffset(0x00)] public byte* RDRAM;
-        [FieldOffset(0x08)] public byte* DMEM;
-        [FieldOffset(0x10)] public byte* IMEM;
+        [FieldOffset(0x00)] public u8* RDRAM;
+        [FieldOffset(0x08)] public u8* DMEM;
+        [FieldOffset(0x10)] public u8* IMEM;
 
         [FieldOffset(0x18)] public UIntPtr MI_INTR_REG;
 
@@ -29,44 +29,44 @@ public static unsafe class Plugin {
     // TODO: the offsets will be different for 32 bit, we might need a better way to do this
     [StructLayout(LayoutKind.Explicit, Size = 0xF4)]
     public struct GfxInfo {
-        [FieldOffset(0x00)] public byte* HEADER;
-        [FieldOffset(0x08)] public byte* RDRAM;
-        [FieldOffset(0x10)] public byte* DMEM;
-        [FieldOffset(0x18)] public byte* IMEM;
+        [FieldOffset(0x00)] public u8* HEADER;
+        [FieldOffset(0x08)] public u8* RDRAM;
+        [FieldOffset(0x10)] public u8* DMEM;
+        [FieldOffset(0x18)] public u8* IMEM;
 
-        [FieldOffset(0x20)] public uint* MI_INTR_REG;
+        [FieldOffset(0x20)] public u32* MI_INTR_REG;
 
-        [FieldOffset(0x28)] public uint* DPC_START_REG;
-        [FieldOffset(0x30)] public uint* DPC_END_REG;
-        [FieldOffset(0x38)] public uint* DPC_CURRENT_REG;
-        [FieldOffset(0x40)] public uint* DPC_STATUS_REG;
-        [FieldOffset(0x48)] public uint* DPC_CLOCK_REG;
-        [FieldOffset(0x50)] public uint* DPC_BUFBUSY_REG;
-        [FieldOffset(0x58)] public uint* DPC_PIPEBUSY_REG;
-        [FieldOffset(0x60)] public uint* DPC_TMEM_REG;
+        [FieldOffset(0x28)] public u32* DPC_START_REG;
+        [FieldOffset(0x30)] public u32* DPC_END_REG;
+        [FieldOffset(0x38)] public u32* DPC_CURRENT_REG;
+        [FieldOffset(0x40)] public u32* DPC_STATUS_REG;
+        [FieldOffset(0x48)] public u32* DPC_CLOCK_REG;
+        [FieldOffset(0x50)] public u32* DPC_BUFBUSY_REG;
+        [FieldOffset(0x58)] public u32* DPC_PIPEBUSY_REG;
+        [FieldOffset(0x60)] public u32* DPC_TMEM_REG;
 
-        [FieldOffset(0x68)] public uint* VI_STATUS_REG;
-        [FieldOffset(0x70)] public uint* VI_ORIGIN_REG;
-        [FieldOffset(0x78)] public uint* VI_WIDTH_REG;
-        [FieldOffset(0x80)] public uint* VI_INTR_REG;
-        [FieldOffset(0x88)] public uint* VI_V_CURRENT_LINE_REG;
-        [FieldOffset(0x90)] public uint* VI_TIMING_REG;
-        [FieldOffset(0x98)] public uint* VI_V_SYNC_REG;
-        [FieldOffset(0xA0)] public uint* VI_H_SYNC_REG;
-        [FieldOffset(0xA8)] public uint* VI_LEAP_REG;
-        [FieldOffset(0xB0)] public uint* VI_H_START_REG;
-        [FieldOffset(0xB8)] public uint* VI_V_START_REG;
-        [FieldOffset(0xC0)] public uint* VI_V_BURST_REG;
-        [FieldOffset(0xC8)] public uint* VI_X_SCALE_REG;
-        [FieldOffset(0xD0)] public uint* VI_Y_SCALE_REG;
+        [FieldOffset(0x68)] public u32* VI_STATUS_REG;
+        [FieldOffset(0x70)] public u32* VI_ORIGIN_REG;
+        [FieldOffset(0x78)] public u32* VI_WIDTH_REG;
+        [FieldOffset(0x80)] public u32* VI_INTR_REG;
+        [FieldOffset(0x88)] public u32* VI_V_CURRENT_LINE_REG;
+        [FieldOffset(0x90)] public u32* VI_TIMING_REG;
+        [FieldOffset(0x98)] public u32* VI_V_SYNC_REG;
+        [FieldOffset(0xA0)] public u32* VI_H_SYNC_REG;
+        [FieldOffset(0xA8)] public u32* VI_LEAP_REG;
+        [FieldOffset(0xB0)] public u32* VI_H_START_REG;
+        [FieldOffset(0xB8)] public u32* VI_V_START_REG;
+        [FieldOffset(0xC0)] public u32* VI_V_BURST_REG;
+        [FieldOffset(0xC8)] public u32* VI_X_SCALE_REG;
+        [FieldOffset(0xD0)] public u32* VI_Y_SCALE_REG;
 
 
         [FieldOffset(0xD8)] public M64FunctionDelegate CheckInterrupts;
 
-        [FieldOffset(0xE0)] public uint Version;
+        [FieldOffset(0xE0)] public u32 Version;
 
-        [FieldOffset(0xE4)] public uint* SP_STATUS_REG;
-        [FieldOffset(0xEC)] public uint* RDRAM_SIZE;
+        [FieldOffset(0xE4)] public u32* SP_STATUS_REG;
+        [FieldOffset(0xEC)] public u32* RDRAM_SIZE;
     };
 
     // TODO: the offsets will be different for 32 bit, we might need a better way to do this
@@ -106,14 +106,14 @@ public static unsafe class Plugin {
 
     [StructLayout(LayoutKind.Explicit, Size = 0x10)]
     public struct ControlInfo {
-        [FieldOffset(0x00)] public int Present;
-        [FieldOffset(0x04)] public int RawData;
-        [FieldOffset(0x08)] public int Plugin;
-        [FieldOffset(0x0C)] public int Type;
+        [FieldOffset(0x00)] public s32 Present;
+        [FieldOffset(0x04)] public s32 RawData;
+        [FieldOffset(0x08)] public s32 Plugin;
+        [FieldOffset(0x0C)] public s32 Type;
     }
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int RomOpen();
+    public extern static s32 RomOpen();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void RomClosed();
@@ -122,10 +122,10 @@ public static unsafe class Plugin {
     public extern static void ChangeWindow();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int InitiateGFX(GfxInfo Gfx_Info);
+    public extern static s32 InitiateGFX(GfxInfo Gfx_Info);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void MoveScreen(int x, int y);
+    public extern static void MoveScreen(s32 x, s32 y);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void ProcessDList();
@@ -146,37 +146,37 @@ public static unsafe class Plugin {
     public extern static void ViWidthChanged();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadScreen2(int* dest, int* width, int* height, int front);
+    public extern static void ReadScreen2(s32* dest, s32* width, s32* height, s32 front);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void SetRenderingCallback();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ResizeVideoOutput(int width, int height);
+    public extern static void ResizeVideoOutput(s32 width, s32 height);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBRead(uint addr);
+    public extern static void FBRead(u32 addr);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBWrite(uint addr, uint size);
+    public extern static void FBWrite(u32 addr, u32 size);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBGetFrameBufferInfo(int* p);
+    public extern static void FBGetFrameBufferInfo(s32* p);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void AiDacrateChanged(int SystemType);
+    public extern static void AiDacrateChanged(s32 SystemType);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void AiLenChanged();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int InitiateAudio(AudioInfo Audio_Info);
+    public extern static s32 InitiateAudio(AudioInfo Audio_Info);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void ProcessAList();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetSpeedFactor(int percent);
+    public extern static void SetSpeedFactor(s32 percent);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void VolumeUp();
@@ -185,10 +185,10 @@ public static unsafe class Plugin {
     public extern static void VolumeDown();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static int VolumeGetLevel();
+    public extern static s32 VolumeGetLevel();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void VolumeSetLevel(int level);
+    public extern static void VolumeSetLevel(s32 level);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void VolumeMute();
@@ -197,44 +197,44 @@ public static unsafe class Plugin {
     public extern static char* VolumeGetString();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ControllerCommand(int Control, byte* Command);
+    public extern static void ControllerCommand(s32 Control, u8* Command);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void GetKeys(int Control, Buttons* Keys);
+    public extern static void GetKeys(s32 Control, Buttons* Keys);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void InitiateControllers(ControlInfo ControlInfo);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadController(int Control, byte* Command);
+    public extern static void ReadController(s32 Control, u8* Command);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SDL_KeyDown(int keymod, int keysym);
+    public extern static void SDL_KeyDown(s32 keymod, s32 keysym);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SDL_KeyUp(int keymod, int keysym);
+    public extern static void SDL_KeyUp(s32 keymod, s32 keysym);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void RenderCallback();
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SendVRUWord(ushort length, ushort* word, byte lang);
+    public extern static void SendVRUWord(u16 length, u16* word, u8 lang);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetMicState(int state);
+    public extern static void SetMicState(s32 state);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadVRUResults(ushort* error_flags, ushort* num_results, ushort* mic_level, ushort* voice_level, ushort* voice_length, ushort* matches);
+    public extern static void ReadVRUResults(u16* error_flags, u16* num_results, u16* mic_level, u16* voice_level, u16* voice_length, u16* matches);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ClearVRUWords(byte length);
+    public extern static void ClearVRUWords(u8 length);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetVRUWordMask(byte length, byte* mask);
+    public extern static void SetVRUWordMask(u8 length, u8* mask);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static uint DoRspCycles(uint Cycles);
+    public extern static u32 DoRspCycles(u32 Cycles);
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void InitiateRSP(RSPInfo Rsp_Info, uint* CycleCount);
+    public extern static void InitiateRSP(RSPInfo Rsp_Info, u32* CycleCount);
 }

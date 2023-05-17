@@ -51,8 +51,8 @@ public class ModLoader64 {
     /// </summary>
     /// <param name="args">parameters passed to the program</param>
     /// <returns>Exit code</returns>
-    public static int Main(string[] args) {
-        int exit = 0;
+    public static s32 Main(string[] args) {
+        s32 exit = 0;
         Logger.Info("Hello, world!");
         if (!Initialize()) {
             exit = 1;

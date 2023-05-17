@@ -63,7 +63,7 @@ public static class Boot {
         }
 
         M64PluginType type = M64PluginType.M64PLUGIN_NULL;
-        int version = 0;
+        s32 version = 0;
         char* pluginName = (char*)IntPtr.Zero;
         nint api = 0;
         nint capabilities = 0;
@@ -77,7 +77,7 @@ public static class Boot {
             return false;
         }
 
-        int ConfigAPIVersion, DebugAPIVersion, VidextAPIVersion;
+        s32 ConfigAPIVersion, DebugAPIVersion, VidextAPIVersion;
         if (CoreGetAPIVersions((IntPtr)(&ConfigAPIVersion), (IntPtr)(&DebugAPIVersion), (IntPtr)(&VidextAPIVersion), IntPtr.Zero) != M64Error.M64ERR_SUCCESS) {
             Logger.Error("Core library broken; no CoreAPIVersionFunc() function found.");
             return false;
@@ -151,7 +151,7 @@ public static class Boot {
             ConfigUIConsole = configUIConsole;
             saveConfig = true;
         }
-        else if ((int)configParamsVersion != (int)CONFIG_PARAM_VERSION) {
+        else if ((s32)configParamsVersion != (s32)CONFIG_PARAM_VERSION) {
             Logger.Warning($"Incompatible version {configParamsVersion} in 'UI-Console' config section: current is {configParamsVersion}. Setting defaults.");
             Config.ConfigDeleteSection(StringToAnsiString("UI-Console"));
             Config.ConfigOpenSection(StringToAnsiString("UI-Console"), &configUIConsole);
@@ -201,7 +201,7 @@ public static class Boot {
 
     public static unsafe bool InitializePlugins() {
         M64PluginType type = M64PluginType.M64PLUGIN_NULL;
-        int version = 0;
+        s32 version = 0;
         char* pluginName = (char*)IntPtr.Zero;
         char* pluginDir = Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("PluginDir"));
 
