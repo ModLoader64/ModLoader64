@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Modloader64;
+namespace ModLoader64;
 
 using Core;
 using Mupen64plus;

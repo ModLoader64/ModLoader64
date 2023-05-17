@@ -1,7 +1,7 @@
 ﻿using System;
-using Modloader64.Common;
+using ModLoader64.Common;
 
-namespace Modloader64.Mupen64plus;
+namespace ModLoader64.Mupen64plus;
 
 /// <summary>
 /// Enumeration used for message levels

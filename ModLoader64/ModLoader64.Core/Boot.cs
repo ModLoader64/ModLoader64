@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Modloader64.Core;
+namespace ModLoader64.Core;
 
 using Mupen64plus;
 using static Mupen64plus.Common;

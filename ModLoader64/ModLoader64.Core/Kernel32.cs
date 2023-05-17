@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Modloader64.Core; 
+namespace ModLoader64.Core; 
 
 public static class Kernel32 {
     [DllImport("kernel32.dll")]

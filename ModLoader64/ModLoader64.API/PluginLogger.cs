@@ -1,6 +1,6 @@
-﻿using Modloader64.Common;
+﻿using ModLoader64.Common;
 
-namespace Modloader64.API;
+namespace ModLoader64.API;
 
 // TODO: make the API aware of the plugin name
 

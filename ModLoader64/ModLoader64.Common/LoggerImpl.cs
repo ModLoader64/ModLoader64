@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Modloader64.Common;
+namespace ModLoader64.Common;
 
 /// <summary>
 /// Implementation of all other loggers

@@ -1,8 +1,8 @@
 using System;
 
-using Modloader64.Common;
+using ModLoader64.Common;
 
-namespace Modloader64.Core;
+namespace ModLoader64.Core;
 
 /// <summary>
 /// Singleton for internal Modloader logging
