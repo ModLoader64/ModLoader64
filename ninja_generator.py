@@ -15,7 +15,7 @@ class WindowsProject:
 
 projects = [
     WindowsProject("GLideN64", "GLideN64/projects/msvc/GLideN64.sln", configs=["Debug_mupenplus", "Release_mupenplus"], platforms=["Win32", "x64"], artifacts=["bin/__PLATFORM__/__CONFIG__/*.dll"]),
-    WindowsProject("Modloader", "Modloader/Modloader.csproj", artifacts=["bin/__PLATFORM__/__CONFIG__/net7.0/*"]),
+    WindowsProject("Modloader64", "Modloader64/Modloader64.csproj", artifacts=["bin/__PLATFORM__/__CONFIG__/net7.0/*"]),
     WindowsProject("mupen64plus-audio-sdl", "mupen64plus-audio-sdl/projects/msvc/mupen64plus-audio-sdl.vcxproj"),
     WindowsProject("mupen64plus-input-sdl", "mupen64plus-input-sdl/projects/msvc/mupen64plus-input-sdl.vcxproj"),
     WindowsProject("mupen64plus-rsp-hle", "mupen64plus-rsp-hle/projects/msvc/mupen64plus-rsp-hle.vcxproj"),

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modloader", "Modloader.csproj", "{BE5F70F2-DC9E-4D8B-B126-7364F1DBE05A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Modloader64", "Modloader64.csproj", "{B3AB8B1B-EF29-4898-9AFC-577C7A6B62CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BE5F70F2-DC9E-4D8B-B126-7364F1DBE05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE5F70F2-DC9E-4D8B-B126-7364F1DBE05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE5F70F2-DC9E-4D8B-B126-7364F1DBE05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE5F70F2-DC9E-4D8B-B126-7364F1DBE05A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3AB8B1B-EF29-4898-9AFC-577C7A6B62CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3AB8B1B-EF29-4898-9AFC-577C7A6B62CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3AB8B1B-EF29-4898-9AFC-577C7A6B62CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3AB8B1B-EF29-4898-9AFC-577C7A6B62CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E2F4B662-C262-479F-BDE0-42795EB3DFE9}
+		SolutionGuid = {B4502E27-F55F-4B4D-A474-C62E59A9D48F}
 	EndGlobalSection
 EndGlobal

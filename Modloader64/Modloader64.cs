@@ -1,14 +1,15 @@
 ﻿using System.Runtime.InteropServices;
-using Modloader2.Modloader2Internal;
-using Modloader2.Mupen64plus;
-using Logger = Modloader2.Modloader2Internal.Logger;
 
-namespace Modloader2;
+namespace Modloader64;
+
+using Core;
+using Mupen64plus;
+using Logger = Core.Logger;
 
 /// <summary>
-/// Main Modloader2 class
+/// Main Modloader64 class
 /// </summary>
-public class Modloader2 {
+public class Modloader64 {
     public static bool CoreWasInitialized = false;
     public static bool RomWasLoaded = false;
 
@@ -46,7 +47,7 @@ public class Modloader2 {
     }
 
     /// <summary>
-    /// Entrypoint of Modloader2
+    /// Entrypoint of Modloader64
     /// </summary>
     /// <param name="args">parameters passed to the program</param>
     /// <returns>Exit code</returns>

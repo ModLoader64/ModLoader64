@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Modloader2.Mupen64plus.Frontend;
 
-namespace Modloader2.Mupen64plus;
+namespace Modloader64.Mupen64plus;
+
+using static Frontend;
 
 /// <summary>
 /// Enumeration which represents the plugin types in the mupen64plus api

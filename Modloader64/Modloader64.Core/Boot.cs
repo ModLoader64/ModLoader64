@@ -1,15 +1,11 @@
 ﻿
-using Modloader2.Mupen64plus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Modloader2.Mupen64plus.Common;
 
-namespace Modloader2.Modloader2Internal; 
+namespace Modloader64.Core;
+
+using Mupen64plus;
+using static Mupen64plus.Common;
 
 public static class Boot {
     private static IntPtr ConfigCore = IntPtr.Zero;

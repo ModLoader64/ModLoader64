@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-using static Modloader2.Mupen64plus.Frontend;
+namespace Modloader64.Mupen64plus;
 
-namespace Modloader2.Mupen64plus;
+using static Frontend;
 
 public static unsafe class Debugger {
     public enum M64DebuggerRunState {

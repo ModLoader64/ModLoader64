@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Modloader2.Mupen64plus.VideoExtension;
 
-namespace Modloader2.Mupen64plus;
+namespace Modloader64.Mupen64plus;
 
-public unsafe class Frontend
+using static VideoExtension;
+
+public static unsafe class Frontend
 {
     /// <summary>
     /// Delegate for the DebugCallback parameter

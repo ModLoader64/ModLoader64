@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Modloader2.Mupen64plus;
+namespace Modloader64.Mupen64plus;
 
 public enum GLattr {
     M64P_GL_DOUBLEBUFFER = 1,

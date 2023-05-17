@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Modloader2.Common;
+namespace Modloader64.Common;
 
 /// <summary>
 /// Implementation of all other loggers
