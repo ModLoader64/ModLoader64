@@ -7,9 +7,9 @@ using Mupen64plus;
 using Logger = Core.Logger;
 
 /// <summary>
-/// Main Modloader64 class
+/// Main ModLoader64 class
 /// </summary>
-public class Modloader64 {
+public class ModLoader64 {
     public static bool CoreWasInitialized = false;
     public static bool RomWasLoaded = false;
 
@@ -47,7 +47,7 @@ public class Modloader64 {
     }
 
     /// <summary>
-    /// Entrypoint of Modloader64
+    /// Entrypoint of ModLoader64
     /// </summary>
     /// <param name="args">parameters passed to the program</param>
     /// <returns>Exit code</returns>
