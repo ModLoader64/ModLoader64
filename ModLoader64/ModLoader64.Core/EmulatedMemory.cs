@@ -32,7 +32,7 @@ public static unsafe class EmulatedMemory {
             return false;
         }
 
-        if (address + size < 0 || address + size > MEMORY_SIZE) {
+        if (address + size > MEMORY_SIZE) {
             Logger.Error($"Tried to access emulated memory which exceeds memory bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')} with size 0x{size:X}");
             EmitStackTrace(skip);
             return false;
@@ -45,6 +45,11 @@ public static unsafe class EmulatedMemory {
         return ((address >> 2) * 4) + (3 - (address & 3));
     }
 
+    /// <summary>
+    /// Read an 8-bit integer value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static byte Read8(u32 address) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
@@ -54,6 +59,11 @@ public static unsafe class EmulatedMemory {
         return Memory[address];
     }
 
+    /// <summary>
+    /// Read an 16-bit integer value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static u16 Read16(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return 0;
@@ -65,6 +75,11 @@ public static unsafe class EmulatedMemory {
         return (u16)(((u16)Memory[lo] << 8) | (u16)Memory[hi]);
     }
 
+    /// <summary>
+    /// Read an 32-bit integer value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static u32 Read32(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
@@ -73,6 +88,11 @@ public static unsafe class EmulatedMemory {
         return *((u32*)(Memory + address));
     }
 
+    /// <summary>
+    /// Read an 64-bit integer value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static u64 Read64(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return 0;
@@ -83,6 +103,11 @@ public static unsafe class EmulatedMemory {
         return (hi << 32) | lo;
     }
 
+    /// <summary>
+    /// Read an 32-bit floating point value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static f32 ReadF32(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f32>())) {
             return 0;
@@ -91,6 +116,11 @@ public static unsafe class EmulatedMemory {
         return *((f32*)(Memory + address));
     }
 
+    /// <summary>
+    /// Read an 64-bit floating point value at address
+    /// </summary>
+    /// <param name="address">Where to read</param>
+    /// <returns>Value read, 0 on error</returns>
     public static f64 ReadF64(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f64>())) {
             return 0;
@@ -101,6 +131,11 @@ public static unsafe class EmulatedMemory {
         return BitConverter.Int64BitsToDouble((hi << 32) | lo);
     }
 
+    /// <summary>
+    /// Write a 8-bit integer to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void Write8(u32 address, u8 value) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
@@ -110,6 +145,11 @@ public static unsafe class EmulatedMemory {
         Memory[address] = value;
     }
 
+    /// <summary>
+    /// Write a 16-bit integer to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void Write16(u32 address, u16 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return;
@@ -122,6 +162,11 @@ public static unsafe class EmulatedMemory {
         Memory[hi] = (u8)(value & 0xFF);
     }
 
+    /// <summary>
+    /// Write a 32-bit integer to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void Write32(u32 address, u32 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
@@ -130,6 +175,11 @@ public static unsafe class EmulatedMemory {
         *((u32*)(Memory + address)) = value;
     }
 
+    /// <summary>
+    /// Write a 64-bit integer to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void Write64(u32 address, u64 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
@@ -141,6 +191,11 @@ public static unsafe class EmulatedMemory {
         *((u32*)(Memory + address)) = (u32)hi;
     }
 
+    /// <summary>
+    /// Write a 32-bit floating point value to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void WriteF32(u32 address, f32 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
@@ -148,6 +203,11 @@ public static unsafe class EmulatedMemory {
         *((f32*)(Memory + address)) = value;
     }
 
+    /// <summary>
+    /// Write a 64-bit floating point value to memory address
+    /// </summary>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void WriteF64(u32 address, f64 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
@@ -160,6 +220,12 @@ public static unsafe class EmulatedMemory {
         *((u32*)(Memory + address)) = (u32)hi;
     }
 
+    /// <summary>
+    /// Write a primitive value of type T, with sizeof(T) to memory address
+    /// </summary>
+    /// <typeparam name="T">Primitive type</typeparam>
+    /// <param name="address">Where to write</param>
+    /// <param name="value">Value to write</param>
     public static void Write<T>(u32 address, T value) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T must be a primitive type!");
@@ -200,7 +266,12 @@ public static unsafe class EmulatedMemory {
         }
     }
 
-
+    /// <summary>
+    /// Read a value of type T, with size sizeof(T) at memory address
+    /// </summary>
+    /// <typeparam name="T">Type of read value</typeparam>
+    /// <param name="address">Address to read</param>
+    /// <returns>Value read</returns>
     public static T Read<T>(uint address) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T Must be a primitive type!");
