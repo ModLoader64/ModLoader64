@@ -1,10 +1,10 @@
-﻿using ModLoader64.Core;
-using System;
+﻿using ModLoader.API;
 using System.Runtime.CompilerServices;
 
 namespace ModLoader64.Core;
 
-public static unsafe class EmulatedMemory {
+[BoundMemory]
+public unsafe class EmulatedMemory : IMemory {
     private const u32 VADDR_MASK = 0x0FFFFFFF;
     private const u32 MEMORY_SIZE = 0x00800000; //0x03E00000;
     private static u8* _Memory = null;
@@ -45,7 +45,7 @@ public static unsafe class EmulatedMemory {
         return ((address >> 2) * 4) + (3 - (address & 3));
     }
 
-    public static byte Read8(u32 address) {
+    public static byte ReadU8(u32 address) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return 0;
@@ -54,7 +54,7 @@ public static unsafe class EmulatedMemory {
         return Memory[address];
     }
 
-    public static u16 Read16(u32 address) {
+    public static u16 ReadU16(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return 0;
         }
@@ -65,7 +65,7 @@ public static unsafe class EmulatedMemory {
         return (u16)(((u16)Memory[lo] << 8) | (u16)Memory[hi]);
     }
 
-    public static u32 Read32(u32 address) {
+    public static u32 ReadU32(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
@@ -73,7 +73,7 @@ public static unsafe class EmulatedMemory {
         return *((u32*)(Memory + address));
     }
 
-    public static u64 Read64(u32 address) {
+    public static u64 ReadU64(u32 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return 0;
         }
@@ -101,7 +101,7 @@ public static unsafe class EmulatedMemory {
         return BitConverter.Int64BitsToDouble((hi << 32) | lo);
     }
 
-    public static void Write8(u32 address, u8 value) {
+    public static void WriteU8(u32 address, u8 value) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return;
@@ -110,7 +110,7 @@ public static unsafe class EmulatedMemory {
         Memory[address] = value;
     }
 
-    public static void Write16(u32 address, u16 value) {
+    public static void WriteU16(u32 address, u16 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return;
         }
@@ -122,7 +122,7 @@ public static unsafe class EmulatedMemory {
         Memory[hi] = (u8)(value & 0xFF);
     }
 
-    public static void Write32(u32 address, u32 value) {
+    public static void WriteU32(u32 address, u32 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
         }
@@ -130,7 +130,7 @@ public static unsafe class EmulatedMemory {
         *((u32*)(Memory + address)) = value;
     }
 
-    public static void Write64(u32 address, u64 value) {
+    public static void WriteU64(u32 address, u64 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
         }
@@ -172,28 +172,28 @@ public static unsafe class EmulatedMemory {
             WriteF64(address, (f64)(object)value);
         }
         else if (typeof(T) == typeof(u8)) {
-            Write8(address, (u8)(object)value);
+            WriteU8(address, (u8)(object)value);
         }
         else if (typeof(T) == typeof(s8)) {
-            Write8(address, (u8)((s8)(object)value));
+            WriteU8(address, (u8)((s8)(object)value));
         }
         else if (typeof(T) == typeof(u16)) {
-            Write16(address, (u16)(object)value);
+            WriteU16(address, (u16)(object)value);
         }
         else if (typeof(T) == typeof(s16)) {
-            Write16(address, (u16)((s16)(object)value));
+            WriteU16(address, (u16)((s16)(object)value));
         }
         else if (typeof(T) == typeof(u32)) {
-            Write32(address, (u32)(object)value);
+            WriteU32(address, (u32)(object)value);
         }
         else if (typeof(T) == typeof(s32)) {
-            Write32(address, (u32)((s32)(object)value));
+            WriteU32(address, (u32)((s32)(object)value));
         }
         else if (typeof(T) == typeof(u64)) {
-            Write64(address, (u64)(object)value);
+            WriteU64(address, (u64)(object)value);
         }
         else if (typeof(T) == typeof(s64)) {
-            Write64(address, (u64)((s64)(object)value));
+            WriteU64(address, (u64)((s64)(object)value));
         }
         else {
             throw new InvalidOperationException("Unsupported type!");
@@ -216,17 +216,62 @@ public static unsafe class EmulatedMemory {
         else {
             switch (size) {
                 case 1:
-                    return (T)(object)Read8(address);
+                    return (T)(object)ReadU8(address);
                 case 2:
-                    return (T)(object)Read16(address);
+                    return (T)(object)ReadU16(address);
                 case 4:
-                    return (T)(object)Read32(address);
+                    return (T)(object)ReadU32(address);
                 case 8:
-                    return (T)(object)Read64(address);
+                    return (T)(object)ReadU64(address);
                 default:
                     throw new InvalidOperationException($"T has an invalid size? {size}");
             }
         }
+    }
+
+    public static sbyte ReadS8(uint address)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static short ReadS16(uint address)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static int ReadS32(uint address)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static long ReadS64(uint address)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void WriteS8(uint address, sbyte value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void WriteS16(uint address, short value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void WriteS32(uint address, int value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void WriteS64(uint address, long value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void InvalidateCachedCode()
+    {
+        Mupen64plus.Memory.InvalidateCachedCode();
     }
 }
 

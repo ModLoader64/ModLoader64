@@ -3,23 +3,28 @@
 namespace ModLoader64;
 
 using Core;
+using ModLoader.API;
 using Mupen64plus;
 using Logger = Core.Logger;
 
 /// <summary>
 /// Main ModLoader64 class
 /// </summary>
-public class ModLoader64 {
+/// 
+[Binding("Mupen64Plus")]
+public class ModLoader64  : IBinding
+{
     public static bool CoreWasInitialized = false;
     public static bool RomWasLoaded = false;
 
-    private static IntPtr RomPtr = IntPtr.Zero;
+    public static IntPtr RomPtr = IntPtr.Zero;
+    public static string rom = "oot.z64";
 
     /// <summary>
     /// Initializes Mupen64plus
     /// </summary>
     /// <returns>Returns true if success, otherwise false</returns>
-    private static unsafe bool Initialize() {
+    public static unsafe bool Initialize() {
         if (Boot.InitializeCoreStartup() == false) {
             Logger.Error("InitializeCoreStartup failed!");
             return false;
@@ -32,7 +37,7 @@ public class ModLoader64 {
             return false;
         }
 
-        if (Boot.InitializeROM(ref RomPtr) == false) {
+        if (Boot.InitializeROM(rom, ref RomPtr) == false) {
             Logger.Error("InitializeROM failed!");
             return false;
         }
@@ -44,6 +49,11 @@ public class ModLoader64 {
         Boot.InitializePlugins();
 
         return true;
+    }
+
+    public static bool LoadState(string file)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -75,5 +85,57 @@ public class ModLoader64 {
 
         return exit;
     }
-}
 
+    public static bool ChangeGameFile(string file)
+    {
+        rom = file;
+        return true;
+    }
+
+    public static void InitBinding()
+    {
+        Initialize();
+    }
+
+    public static bool SaveState(string file)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void SetGameFile(string file)
+    {
+        rom = file;
+    }
+
+    public static void StartBinding()
+    {
+        Logger.Info("Hello, world!");
+
+        Boot.StartGo();
+
+        Boot.ShutdownPlugins();
+        if (RomPtr != IntPtr.Zero)
+        {
+            Marshal.FreeHGlobal(RomPtr);
+        }
+
+        if (CoreWasInitialized)
+        {
+            if (RomWasLoaded)
+            {
+                Frontend.CoreDoCommand(M64Command.M64CMD_ROM_CLOSE, 0, IntPtr.Zero);
+            }
+            Frontend.CoreShutdown();
+        }
+    }
+
+    public static void StopBinding()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void TogglePause()
+    {
+        throw new NotImplementedException();
+    }
+}

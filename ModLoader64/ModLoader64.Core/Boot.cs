@@ -181,8 +181,8 @@ public static class Boot {
         return true;
     }
 
-    public static unsafe bool InitializeROM(ref IntPtr romPtr) {
-        string romPath = "oot.z64";
+    public static unsafe bool InitializeROM(string rom, ref IntPtr romPtr) {
+        string romPath = rom;
         byte[] romData = File.ReadAllBytes(romPath);
         romPtr = Marshal.AllocHGlobal(romData.Length);
         if (romPtr == IntPtr.Zero) {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ModLoader.API;
+using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
@@ -19,14 +21,17 @@ public static class GlobalCallbacks {
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     private extern static void PauseSetCallback(CommonCallbackDelegate callback);
+    // Binding event objects.
+    private static readonly EventNewVi viEvent = new EventNewVi();
+    private static readonly EventNewFrame frameEvent = new EventNewFrame(0);
 
     public static unsafe void OnFrame(int FrameCount) {
-        if (FrameCount > 200) {
-            Core.EmulatedMemory.Write(0x8011A604, (u16)999);
-        }
+        frameEvent.frame = FrameCount;
+        PubEventBus.bus.PushEvent(frameEvent);
     }
 
     public static void OnVI() {
+        PubEventBus.bus.PushEvent(viEvent);
     }
 
     public static void OnReset(bool HardReset) {
