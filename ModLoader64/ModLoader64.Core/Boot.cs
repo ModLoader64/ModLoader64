@@ -164,6 +164,8 @@ public static class Boot {
             saveConfig = true;
         }
 
+        Config.ConfigSetDefaultInt(configCore, StringToAnsiString("ForceMemorySize"), 0, StringToAnsiString("Force the memory size to a specific size. 0 is off, 1 is 8 mb, 2 is 4 mb. Use this over DisableExtraMem for greater control."));
+
         Config.ConfigSetDefaultFloat(ConfigUIConsole, versionString, CONFIG_PARAM_VERSION, StringToAnsiString("Config parameter set version number. Please don't change this version number."));
         Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("PluginDir"), StringToAnsiString("./plugins"), StringToAnsiString("Directory in which to search for plugins"));
         Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("VideoPlugin"), StringToAnsiString("mupen64plus-video-GLideN64.dll"), StringToAnsiString("Filename of video plugin"));
