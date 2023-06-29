@@ -5,8 +5,11 @@ using System.Runtime.CompilerServices;
 namespace ModLoader64.Core;
 
 public static unsafe class EmulatedMemory {
-    private const u32 VADDR_MASK = 0x0FFFFFFF;
-    private const u32 MEMORY_SIZE = 0x00800000; //0x03E00000;
+    private const u32 VADDR_BASE = 0x80000000;
+    private const u32 MEMORY_SIZE_NORMAL = 0x03F00000;
+    private const u32 MEMORY_SIZE = 0x40000000;
+    private const u64 VADDR2_BASE = 0x100000000;
+
     private static u8* _Memory = null;
 
     private static u8* Memory {
@@ -22,17 +25,23 @@ public static unsafe class EmulatedMemory {
         Logger.Error(new System.Diagnostics.StackTrace(skip, true).ToString());
     }
 
-    public static bool MemorySafetyCheck(ref u32 address, s32 size) {
+    public static bool MemorySafetyCheck(ref u64 address, s32 size) {
         s32 skip = 2;
 
-        address &= VADDR_MASK;
+        if (address > VADDR2_BASE) {
+            address = address - VADDR2_BASE + MEMORY_SIZE_NORMAL;
+        }
+        else if (address > VADDR_BASE) {
+            address -= VADDR_BASE;
+        }
+
         if (address < 0 || address > MEMORY_SIZE) {
             Logger.Error($"Tried to access emulated memory that is out of bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')}!");
             EmitStackTrace(skip);
             return false;
         }
 
-        if (address + size > MEMORY_SIZE) {
+        if ((address + (u64)size) > MEMORY_SIZE) {
             Logger.Error($"Tried to access emulated memory which exceeds memory bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')} with size 0x{size:X}");
             EmitStackTrace(skip);
             return false;
@@ -41,7 +50,7 @@ public static unsafe class EmulatedMemory {
         return true;
     }
 
-    private static u32 RotateAddress(u32 address) {
+    private static u64 RotateAddress(u64 address) {
         return ((address >> 2) * 4) + (3 - (address & 3));
     }
 
@@ -50,7 +59,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static byte Read8(u32 address) {
+    public static byte Read8(u64 address) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return 0;
@@ -64,13 +73,13 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u16 Read16(u32 address) {
+    public static u16 Read16(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return 0;
         }
 
-        u32 lo = RotateAddress(address);
-        u32 hi = RotateAddress(address + 1);
+        u64 lo = RotateAddress(address);
+        u64 hi = RotateAddress(address + 1);
 
         return (u16)(((u16)Memory[lo] << 8) | (u16)Memory[hi]);
     }
@@ -80,12 +89,12 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u32 Read32(u32 address) {
+    public static u64 Read32(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
 
-        return *((u32*)(Memory + address));
+        return *((u64*)(Memory + address));
     }
 
     /// <summary>
@@ -93,13 +102,13 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u64 Read64(u32 address) {
+    public static u64 Read64(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return 0;
         }
 
-        u64 lo = *((u32*)(Memory + address + 4));
-        u64 hi = *((u32*)(Memory + address));
+        u64 lo = *((u64*)(Memory + address + 4));
+        u64 hi = *((u64*)(Memory + address));
         return (hi << 32) | lo;
     }
 
@@ -108,7 +117,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static f32 ReadF32(u32 address) {
+    public static f32 ReadF32(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f32>())) {
             return 0;
         }
@@ -121,7 +130,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static f64 ReadF64(u32 address) {
+    public static f64 ReadF64(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<f64>())) {
             return 0;
         }
@@ -136,7 +145,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void Write8(u32 address, u8 value) {
+    public static void Write8(u64 address, u8 value) {
         address = RotateAddress(address);
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u8>())) {
             return;
@@ -150,13 +159,13 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void Write16(u32 address, u16 value) {
+    public static void Write16(u64 address, u16 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u16>())) {
             return;
         }
 
-        u32 lo = RotateAddress(address);
-        u32 hi = RotateAddress(address + 1);
+        u64 lo = RotateAddress(address);
+        u64 hi = RotateAddress(address + 1);
 
         Memory[lo] = (u8)(value >> 8);
         Memory[hi] = (u8)(value & 0xFF);
@@ -167,7 +176,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void Write32(u32 address, u32 value) {
+    public static void Write32(u64 address, u32 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
         }
@@ -180,7 +189,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void Write64(u32 address, u64 value) {
+    public static void Write64(u64 address, u64 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
         }
@@ -196,7 +205,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void WriteF32(u32 address, f32 value) {
+    public static void WriteF32(u64 address, f32 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return;
         }
@@ -208,7 +217,7 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void WriteF64(u32 address, f64 value) {
+    public static void WriteF64(u64 address, f64 value) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u64>())) {
             return;
         }
@@ -226,7 +235,7 @@ public static unsafe class EmulatedMemory {
     /// <typeparam name="T">Primitive type</typeparam>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
-    public static void Write<T>(u32 address, T value) where T : unmanaged {
+    public static void Write<T>(u64 address, T value) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T must be a primitive type!");
         }
