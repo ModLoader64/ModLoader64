@@ -1,4 +1,4 @@
-﻿using ModLoader.API;
+using ModLoader.API;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -28,6 +28,18 @@ public static class GlobalCallbacks {
     public static unsafe void OnFrame(int FrameCount) {
         frameEvent.frame = FrameCount;
         PubEventBus.bus.PushEvent(frameEvent);
+        if (FrameCount > 200) {
+            Core.EmulatedMemory.Write(0x8011A604, (u16)999);
+            Core.EmulatedMemory.Write32(0x83000000, 0xDEADBEEF);
+            if (Core.EmulatedMemory.Read32(0x83000000) != 0xDEADBEEF) {
+                PluginLogger.Error("We are fucked!\n");
+            }
+
+            Core.EmulatedMemory.Write32(0x100000004, 0xDEADBEEF);
+            if (Core.EmulatedMemory.Read32(0x100000004) != 0xDEADBEEF) {
+                PluginLogger.Error("We are fucked!\n");
+            }
+        }
     }
 
     public static void OnVI() {
