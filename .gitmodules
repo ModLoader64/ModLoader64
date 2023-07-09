@@ -1,6 +1,3 @@
-[submodule "mupen64plus-core"]
-	path = mupen64plus-core
-	url = https://github.com/Drahsid2/mupen64plus-core.git
 [submodule "mupen64plus-win32-deps"]
 	path = mupen64plus-win32-deps
 	url = https://github.com/mupen64plus/mupen64plus-win32-deps.git
@@ -16,3 +13,6 @@
 [submodule "mupen64plus-rsp-hle"]
 	path = mupen64plus-rsp-hle
 	url = https://github.com/mupen64plus/mupen64plus-rsp-hle.git
+[submodule "mupen64plus-core"]
+	path = mupen64plus-core
+	url = https://github.com/ModLoader64/mupen64plus-core.git
