@@ -21,8 +21,12 @@ public static class GlobalCallbacks {
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     private extern static void PauseSetCallback(CommonCallbackDelegate callback);
 
+    private static ImGuiTest ImGui;
+
     public static unsafe void OnFrame(int FrameCount) {
         if (FrameCount > 200) {
+            ImGui = new ImGuiTest();
+            ImGui.Initialize(MUPEN_LIBRARY);
             Core.EmulatedMemory.Write(0x8011A604, (u16)999);
             Core.EmulatedMemory.Write32(0x83000000, 0xDEADBEEF);
             if (Core.EmulatedMemory.Read32(0x83000000) != 0xDEADBEEF) {
@@ -37,6 +41,11 @@ public static class GlobalCallbacks {
     }
 
     public static void OnVI() {
+        bool open = true;
+        if (ImGui != null && ImGui.Initialized) {
+            ImGui.Begin("Test", ref open, 0);
+            ImGui.End();
+        }
     }
 
     public static void OnReset(bool HardReset) {
