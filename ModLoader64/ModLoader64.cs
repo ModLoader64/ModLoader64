@@ -5,6 +5,7 @@ namespace ModLoader64;
 using Core;
 using ModLoader.API;
 using Mupen64plus;
+using System.Reflection;
 using Logger = Core.Logger;
 
 /// <summary>

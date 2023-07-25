@@ -95,15 +95,7 @@ build mupen64plus-core_x86_Debug: build_project mupen64plus-core/projects/msvc/m
   cfg=Debug
   platform=x86
 
-build mupen64plus-core_x86_New_Dynarec_Debug: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x86_Debug
-  cfg=New_Dynarec_Debug
-  platform=x86
-
-build mupen64plus-core_x86_New_Dynarec_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x86_New_Dynarec_Debug
-  cfg=New_Dynarec_Release
-  platform=x86
-
-build mupen64plus-core_x86_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x86_New_Dynarec_Release
+build mupen64plus-core_x86_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x86_Debug
   cfg=Release
   platform=x86
 
@@ -111,19 +103,11 @@ build mupen64plus-core_x64_Debug: build_project mupen64plus-core/projects/msvc/m
   cfg=Debug
   platform=x64
 
-build mupen64plus-core_x64_New_Dynarec_Debug: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x64_Debug
-  cfg=New_Dynarec_Debug
-  platform=x64
-
-build mupen64plus-core_x64_New_Dynarec_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x64_New_Dynarec_Debug
-  cfg=New_Dynarec_Release
-  platform=x64
-
-build mupen64plus-core_x64_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x64_New_Dynarec_Release
+build mupen64plus-core_x64_Release: build_project mupen64plus-core/projects/msvc/mupen64plus-core.sln | mupen64plus-core_x64_Debug
   cfg=Release
   platform=x64
 
 
-build all: phony GLideN64_Win32_Debug_mupenplus GLideN64_Win32_Release_mupenplus GLideN64_x64_Debug_mupenplus GLideN64_x64_Release_mupenplus Modloader64_x86_Debug Modloader64_x86_Release Modloader64_x64_Debug Modloader64_x64_Release mupen64plus-audio-sdl_x86_Debug mupen64plus-audio-sdl_x86_Release mupen64plus-audio-sdl_x64_Debug mupen64plus-audio-sdl_x64_Release mupen64plus-input-sdl_x86_Debug mupen64plus-input-sdl_x86_Release mupen64plus-input-sdl_x64_Debug mupen64plus-input-sdl_x64_Release mupen64plus-rsp-hle_x86_Debug mupen64plus-rsp-hle_x86_Release mupen64plus-rsp-hle_x64_Debug mupen64plus-rsp-hle_x64_Release mupen64plus-core_x86_Debug mupen64plus-core_x86_New_Dynarec_Debug mupen64plus-core_x86_New_Dynarec_Release mupen64plus-core_x86_Release mupen64plus-core_x64_Debug mupen64plus-core_x64_New_Dynarec_Debug mupen64plus-core_x64_New_Dynarec_Release mupen64plus-core_x64_Release
+build all: phony GLideN64_Win32_Debug_mupenplus GLideN64_Win32_Release_mupenplus GLideN64_x64_Debug_mupenplus GLideN64_x64_Release_mupenplus Modloader64_x86_Debug Modloader64_x86_Release Modloader64_x64_Debug Modloader64_x64_Release mupen64plus-audio-sdl_x86_Debug mupen64plus-audio-sdl_x86_Release mupen64plus-audio-sdl_x64_Debug mupen64plus-audio-sdl_x64_Release mupen64plus-input-sdl_x86_Debug mupen64plus-input-sdl_x86_Release mupen64plus-input-sdl_x64_Debug mupen64plus-input-sdl_x64_Release mupen64plus-rsp-hle_x86_Debug mupen64plus-rsp-hle_x86_Release mupen64plus-rsp-hle_x64_Debug mupen64plus-rsp-hle_x64_Release mupen64plus-core_x86_Debug mupen64plus-core_x86_Release mupen64plus-core_x64_Debug mupen64plus-core_x64_Release
 default all
 

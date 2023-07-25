@@ -26,14 +26,10 @@ public static class GlobalCallbacks {
     private static readonly EventNewVi viEvent = new EventNewVi();
     private static readonly EventNewFrame frameEvent = new EventNewFrame(0);
 
-    private static ImGuiTest ImGui;
-
     public static unsafe void OnFrame(int FrameCount) {
         frameEvent.frame = FrameCount;
         PubEventBus.bus.PushEvent(frameEvent);
         if (FrameCount > 200) {
-            ImGui = new ImGuiTest();
-            ImGui.Initialize(MUPEN_LIBRARY);
             Core.EmulatedMemory.Write(0x8011A604, (u16)999);
             Core.EmulatedMemory.WriteU32(0x83000000, 0xDEADBEEF);
             if (Core.EmulatedMemory.ReadU32(0x83000000) != 0xDEADBEEF) {
@@ -49,11 +45,6 @@ public static class GlobalCallbacks {
 
     public static void OnVI() {
         PubEventBus.bus.PushEvent(viEvent);
-        bool open = true;
-        if (ImGui != null && ImGui.Initialized) {
-            ImGui.Begin("Test", ref open, 0);
-            ImGui.End();
-        }
     }
 
     public static void OnReset(bool HardReset) {
@@ -67,6 +58,16 @@ public static class GlobalCallbacks {
         VISetCallback(OnVI);
         ResetSetCallback(OnReset);
         PauseSetCallback(OnPause);
+
+        // This is bullshittery of the highest order. For the love of christ find a better way to do this.
+        foreach (Type t in Assembly.LoadFile(Path.GetFullPath($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/ImGui.NET.dll")).GetTypes())
+        {
+            if (t.Name == "ImGuiInit")
+            {
+                t.GetMethod("Init")!.Invoke(null, Array.Empty<object>());
+                break;
+            }
+        }
     }
 }
 

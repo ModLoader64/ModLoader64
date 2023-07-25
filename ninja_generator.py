@@ -20,7 +20,7 @@ projects = [
     WindowsProject("mupen64plus-input-sdl", "mupen64plus-input-sdl/projects/msvc/mupen64plus-input-sdl.vcxproj"),
     WindowsProject("mupen64plus-rsp-hle", "mupen64plus-rsp-hle/projects/msvc/mupen64plus-rsp-hle.vcxproj"),
     WindowsProject("mupen64plus-core", "mupen64plus-core/projects/msvc/mupen64plus-core.sln",
-            configs=["Debug", "New_Dynarec_Debug", "New_Dynarec_Release", "Release"]),
+            configs=["Debug", "Release"]),
 ]
 
 def get_msbuild_path():
