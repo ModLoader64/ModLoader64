@@ -3,7 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace ModLoader64.Core;
 
-public static unsafe class EmulatedMemory {
+[BoundMemory]
+public unsafe class EmulatedMemory : IMemory{
     private const u32 VADDR_BASE = 0x80000000;
     private const u32 MEMORY_SIZE_NORMAL = 0x03F00000;
     private const u32 MEMORY_SIZE = 0x40000000;
@@ -88,12 +89,12 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u64 ReadU32(u64 address) {
+    public static u32 ReadU32(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
 
-        return *((u64*)(Memory + address));
+        return *((u32*)(Memory + address));
     }
 
     /// <summary>
@@ -280,7 +281,7 @@ public static unsafe class EmulatedMemory {
     /// <typeparam name="T">Type of read value</typeparam>
     /// <param name="address">Address to read</param>
     /// <returns>Value read</returns>
-    public static T Read<T>(uint address) where T : unmanaged {
+    public static T Read<T>(u64 address) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T Must be a primitive type!");
         }
@@ -308,49 +309,49 @@ public static unsafe class EmulatedMemory {
         }
     }
 
-    public static sbyte ReadS8(uint address)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static short ReadS16(uint address)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static int ReadS32(uint address)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static long ReadS64(uint address)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static void WriteS8(uint address, sbyte value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static void WriteS16(uint address, short value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static void WriteS32(uint address, int value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static void WriteS64(uint address, long value)
-    {
-        throw new NotImplementedException();
-    }
-
     public static void InvalidateCachedCode()
     {
         Mupen64plus.Memory.InvalidateCachedCode();
+    }
+
+    public static sbyte ReadS8(ulong address)
+    {
+        return Convert.ToSByte(ReadU8(address));
+    }
+
+    public static short ReadS16(ulong address)
+    {
+        return Convert.ToInt16(ReadU16(address));
+    }
+
+    public static int ReadS32(ulong address)
+    {
+        return Convert.ToInt32(ReadU32(address));
+    }
+
+    public static long ReadS64(ulong address)
+    {
+        return Convert.ToInt64(ReadU64(address));
+    }
+
+    public static void WriteS8(ulong address, sbyte value)
+    {
+        Write(address, value);
+    }
+
+    public static void WriteS16(ulong address, short value)
+    {
+        Write(address, value);
+    }
+
+    public static void WriteS32(ulong address, int value)
+    {
+        Write(address, value);
+    }
+
+    public static void WriteS64(ulong address, long value)
+    {
+        Write(address, value);
     }
 }
 
