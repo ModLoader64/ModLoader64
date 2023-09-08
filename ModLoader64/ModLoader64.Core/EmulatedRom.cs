@@ -1,21 +1,34 @@
-﻿using ModLoader64.Core;
+﻿using ModLoader64.Mupen64plus;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ModLoader64.Core;
+namespace ModLoader64.Core; 
 
-public static unsafe class EmulatedMemory {
-    private const u32 VADDR_MASK = 0x0FFFFFFF;
-    private const u32 MEMORY_SIZE = 0x03F00000;
+public static unsafe class EmulatedRom {
+    private const u32 MAX_ROM_SIZE = 0x20000000; // 0x3FF0000 + 0x300000 = 0x42F0000 (about 66 mb) is for sure addressable, however I have allocated 512mb to play with in the core.
 
-    private static u8* _Memory = null;
+    private static u8* _Rom = null;
+    private static u32 _RomSize = 0;
 
-    private static u8* Memory {
+    private static u8* Rom {
         get {
-            if (_Memory == null) {
-                _Memory = (u8*)Mupen64plus.Memory.Memory_GetBaseAddress();
+            if (_Rom == null) {
+                _Rom = (u8*)Mupen64plus.Memory.ROM_GetBaseAddress();
             }
-            return _Memory;
+            return _Rom;
+        }
+    }
+
+    private static u32 RomSize {
+        get {
+            if (_RomSize == 0) {
+                _RomSize = Mupen64plus.Memory.ROM_GetBaseSize();
+            }
+            return _RomSize;
         }
     }
 
@@ -32,16 +45,14 @@ public static unsafe class EmulatedMemory {
     public static bool MemorySafetyCheck(ref u64 address, s32 size) {
         const s32 skip = 2;
 
-        address &= VADDR_MASK;
-
-        if (address < 0 || address > MEMORY_SIZE) {
-            Logger.Error($"Tried to access emulated memory that is out of bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')}!");
+        if (address < 0 || address > MAX_ROM_SIZE) {
+            Logger.Error($"Tried to access emulated rom that is out of bounds! Got 0x{address.ToString("X").PadLeft(8, '0')}! Rom size is 0x{RomSize.ToString("X").PadLeft(8, '0')}, max is 0x{MAX_ROM_SIZE.ToString("X").PadLeft(8, '0')}!");
             EmitStackTrace(skip);
             return false;
         }
 
-        if ((address + (u64)size) > MEMORY_SIZE) {
-            Logger.Error($"Tried to access emulated memory which exceeds memory bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')} with size 0x{size:X}!");
+        if ((address + (u64)size) > MAX_ROM_SIZE) {
+            Logger.Error($"Tried to access emulated memory which exceeds memory bounds! Got 0x{address.ToString("X").PadLeft(8, '0')} with size 0x{size:X}! Rom size is 0x{RomSize.ToString("X").PadLeft(8, '0')}, max is 0x{MAX_ROM_SIZE.ToString("X").PadLeft(8, '0')}!");
             EmitStackTrace(skip);
             return false;
         }
@@ -69,7 +80,7 @@ public static unsafe class EmulatedMemory {
             return 0;
         }
 
-        return Memory[address];
+        return Rom[address];
     }
 
     /// <summary>
@@ -85,7 +96,7 @@ public static unsafe class EmulatedMemory {
         u64 lo = RotateAddress(address);
         u64 hi = RotateAddress(address + 1);
 
-        return (u16)(((u16)Memory[lo] << 8) | (u16)Memory[hi]);
+        return (u16)(((u16)Rom[lo] << 8) | (u16)Rom[hi]);
     }
 
     /// <summary>
@@ -98,7 +109,7 @@ public static unsafe class EmulatedMemory {
             return 0;
         }
 
-        return *((u32*)(Memory + address));
+        return *((u32*)(Rom + address));
     }
 
     /// <summary>
@@ -111,8 +122,8 @@ public static unsafe class EmulatedMemory {
             return 0;
         }
 
-        u64 lo = *((u64*)(Memory + address + 4));
-        u64 hi = *((u64*)(Memory + address));
+        u64 lo = *((u64*)(Rom + address + 4));
+        u64 hi = *((u64*)(Rom + address));
         return (hi << 32) | lo;
     }
 
@@ -126,7 +137,7 @@ public static unsafe class EmulatedMemory {
             return 0;
         }
 
-        return *((f32*)(Memory + address));
+        return *((f32*)(Rom + address));
     }
 
     /// <summary>
@@ -139,13 +150,13 @@ public static unsafe class EmulatedMemory {
             return 0;
         }
 
-        s64 lo = *((u32*)(Memory + address + 4));
-        s64 hi = *((u32*)(Memory + address));
+        s64 lo = *((u32*)(Rom + address + 4));
+        s64 hi = *((u32*)(Rom + address));
         return BitConverter.Int64BitsToDouble((hi << 32) | lo);
     }
 
     /// <summary>
-    /// Write a 8-bit integer to memory address
+    /// Write a 8-bit integer to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -155,11 +166,11 @@ public static unsafe class EmulatedMemory {
             return;
         }
 
-        Memory[address] = value;
+        Rom[address] = value;
     }
 
     /// <summary>
-    /// Write a 16-bit integer to memory address
+    /// Write a 16-bit integer to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -171,12 +182,12 @@ public static unsafe class EmulatedMemory {
         u64 lo = RotateAddress(address);
         u64 hi = RotateAddress(address + 1);
 
-        Memory[lo] = (u8)(value >> 8);
-        Memory[hi] = (u8)(value & 0xFF);
+        Rom[lo] = (u8)(value >> 8);
+        Rom[hi] = (u8)(value & 0xFF);
     }
 
     /// <summary>
-    /// Write a 32-bit integer to memory address
+    /// Write a 32-bit integer to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -185,11 +196,11 @@ public static unsafe class EmulatedMemory {
             return;
         }
 
-        *((u32*)(Memory + address)) = value;
+        *((u32*)(Rom + address)) = value;
     }
 
     /// <summary>
-    /// Write a 64-bit integer to memory address
+    /// Write a 64-bit integer to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -200,12 +211,12 @@ public static unsafe class EmulatedMemory {
 
         u64 hi = value >> 32;
         u64 lo = value & 0xFFFFFFFF;
-        *((u32*)(Memory + address + 4)) = (u32)lo;
-        *((u32*)(Memory + address)) = (u32)hi;
+        *((u32*)(Rom + address + 4)) = (u32)lo;
+        *((u32*)(Rom + address)) = (u32)hi;
     }
 
     /// <summary>
-    /// Write a 32-bit floating point value to memory address
+    /// Write a 32-bit floating point value to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -214,11 +225,11 @@ public static unsafe class EmulatedMemory {
             return;
         }
 
-        *((f32*)(Memory + address)) = value;
+        *((f32*)(Rom + address)) = value;
     }
 
     /// <summary>
-    /// Write a 64-bit floating point value to memory address
+    /// Write a 64-bit floating point value to rom address
     /// </summary>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
@@ -230,12 +241,12 @@ public static unsafe class EmulatedMemory {
         u64 dirty = BitConverter.DoubleToUInt64Bits(value);
         u64 hi = dirty >> 32;
         u64 lo = dirty & 0xFFFFFFFF;
-        *((u32*)(Memory + address + 4)) = (u32)lo;
-        *((u32*)(Memory + address)) = (u32)hi;
+        *((u32*)(Rom + address + 4)) = (u32)lo;
+        *((u32*)(Rom + address)) = (u32)hi;
     }
 
     /// <summary>
-    /// Write a primitive value of type T, with sizeof(T) to memory address
+    /// Write a primitive value of type T, with sizeof(T) to rom address
     /// </summary>
     /// <typeparam name="T">Primitive type</typeparam>
     /// <param name="address">Where to write</param>
@@ -318,4 +329,5 @@ public static unsafe class EmulatedMemory {
         }
     }
 }
+
 

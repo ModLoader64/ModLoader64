@@ -17,4 +17,7 @@ public static class Memory {
 
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     public extern static void InvalidateCachedCode();
+
+    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+    public extern static void InvalidateSpecificCachedCode(u32 address, u32 size);
 }
