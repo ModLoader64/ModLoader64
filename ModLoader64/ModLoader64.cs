@@ -12,6 +12,7 @@ using Logger = Core.Logger;
 public class ModLoader64 {
     public static bool CoreWasInitialized = false;
     public static bool RomWasLoaded = false;
+    public static Configuration Config = new Configuration();
 
     private static IntPtr RomPtr = IntPtr.Zero;
 
@@ -54,6 +55,11 @@ public class ModLoader64 {
     public static s32 Main(string[] args) {
         s32 exit = 0;
         Logger.Info("Hello, world!");
+
+        if (Configuration.Load(out Config)) {
+            Configuration.Save(ref Config);
+        }
+
         if (!Initialize()) {
             exit = 1;
         }
@@ -72,6 +78,7 @@ public class ModLoader64 {
             }
             Frontend.CoreShutdown();
         }
+        Configuration.Save(ref Config);
 
         return exit;
     }
