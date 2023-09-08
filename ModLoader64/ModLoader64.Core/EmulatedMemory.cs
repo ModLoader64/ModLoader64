@@ -5,10 +5,8 @@ using System.Runtime.CompilerServices;
 namespace ModLoader64.Core;
 
 public static unsafe class EmulatedMemory {
-    private const u32 VADDR_BASE = 0x80000000;
-    private const u32 MEMORY_SIZE_NORMAL = 0x03F00000;
-    private const u32 MEMORY_SIZE = 0x40000000;
-    private const u64 VADDR2_BASE = 0x100000000;
+    private const u32 VADDR_MASK = 0x0FFFFFFF;
+    private const u32 MEMORY_SIZE = 0x03F00000;
 
     private static u8* _Memory = null;
 
@@ -26,14 +24,9 @@ public static unsafe class EmulatedMemory {
     }
 
     public static bool MemorySafetyCheck(ref u64 address, s32 size) {
-        s32 skip = 2;
+        const s32 skip = 2;
 
-        if (address > VADDR2_BASE) {
-            address = address - VADDR2_BASE + MEMORY_SIZE_NORMAL;
-        }
-        else if (address > VADDR_BASE) {
-            address -= VADDR_BASE;
-        }
+        address &= VADDR_MASK;
 
         if (address < 0 || address > MEMORY_SIZE) {
             Logger.Error($"Tried to access emulated memory that is out of bounds! Got KUSEG 0x{address.ToString("X").PadLeft(8, '0')}!");
@@ -89,12 +82,12 @@ public static unsafe class EmulatedMemory {
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u64 Read32(u64 address) {
+    public static u32 Read32(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
 
-        return *((u64*)(Memory + address));
+        return *((u32*)(Memory + address));
     }
 
     /// <summary>
@@ -235,6 +228,8 @@ public static unsafe class EmulatedMemory {
     /// <typeparam name="T">Primitive type</typeparam>
     /// <param name="address">Where to write</param>
     /// <param name="value">Value to write</param>
+    /// 
+    [Obsolete("Write<T> may produce unwanted behavior. Use the function for the specific type/size where possible.")]
     public static void Write<T>(u64 address, T value) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T must be a primitive type!");
@@ -281,6 +276,8 @@ public static unsafe class EmulatedMemory {
     /// <typeparam name="T">Type of read value</typeparam>
     /// <param name="address">Address to read</param>
     /// <returns>Value read</returns>
+    /// 
+    [Obsolete("Read<T> may produce unwanted behavior. Use the function for the specific type/size where possible.")]
     public static T Read<T>(uint address) where T : unmanaged {
         if (!typeof(T).IsPrimitive) {
             throw new InvalidOperationException("T Must be a primitive type!");
