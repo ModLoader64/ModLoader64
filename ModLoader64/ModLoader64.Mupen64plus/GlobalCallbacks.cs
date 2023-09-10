@@ -21,9 +21,24 @@ public static class GlobalCallbacks {
     [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
     private extern static void PauseSetCallback(CommonCallbackDelegate callback);
 
+    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+    private extern static u32 InstallCodeCallback(u32 address, CommonCallbackDelegate pfn);
+
+    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+    private extern static void UninstallCodeCallback(u32 uuid);
+
     private static ImGuiTest ImGui;
 
+    private static u32 ActorInitTestUUID = 0xFFFFFFFF;
+    private static void ActorInitTest() {
+        PluginLogger.Warning("It worked?");
+    }
+
     public static unsafe void OnFrame(int FrameCount) {
+        if (FrameCount == 10) {
+            ActorInitTestUUID = InstallCodeCallback(0x80020FDC, ActorInitTest);
+        }
+
         if (FrameCount > 200) {
             ImGui = new ImGuiTest();
             ImGui.Initialize(MUPEN_LIBRARY);
