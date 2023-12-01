@@ -72,14 +72,14 @@ internal class ImGuiTest {
 
     public void Initialize(string library) {
         IntPtr pfn = IntPtr.Zero;
-        IntPtr handle = Kernel32.LoadLibrary(library);
+        IntPtr handle = NativeMethods.LoadLibrary(library);
         if (handle == IntPtr.Zero) {
             PluginLogger.Error($"[ImGui] library {library} failed to load!");
-            Kernel32.FreeLibrary(handle);
+            NativeMethods.FreeLibrary(handle);
             return;
         }
 
-        pfn = Kernel32.GetProcAddress(handle, "ImGui_Begin");
+        pfn = NativeMethods.GetProcAddress(handle, "ImGui_Begin");
         if (pfn == IntPtr.Zero) {
             PluginLogger.Error($"[ImGui] library {library} does not contain ImGui_Begin");
         }
@@ -87,7 +87,7 @@ internal class ImGuiTest {
             BeginFn = Marshal.GetDelegateForFunctionPointer<ImGui_BeginDelegate>(pfn);
         }
 
-        pfn = Kernel32.GetProcAddress(handle, "ImGui_End");
+        pfn = NativeMethods.GetProcAddress(handle, "ImGui_End");
         if (pfn == IntPtr.Zero) {
             PluginLogger.Error($"[ImGui] library {library} does not contain ImGui_End");
         }

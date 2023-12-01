@@ -49,7 +49,7 @@ public static class Boot {
 
     public static unsafe bool InitializeCoreStartup() {
         // should get the same handle as the one that dotnet loaded?
-        CoreLibraryHandle = Kernel32.LoadLibrary("mupen64plus.dll");
+        CoreLibraryHandle = NativeMethods.LoadLibrary("mupen64plus.dll");
         if (CoreLibraryHandle == IntPtr.Zero) {
             Logger.Error($"Couldn't load core library!");
             return false;
@@ -254,20 +254,20 @@ public static class Boot {
 
         foreach (var _path in pluginPaths) {
             string path = $"{Marshal.PtrToStringAnsi((IntPtr)pluginDir)}/{Marshal.PtrToStringAnsi(_path)}";
-            IntPtr handle = Kernel32.LoadLibrary(path);
+            IntPtr handle = NativeMethods.LoadLibrary(path);
             if (handle == IntPtr.Zero) {
                 Logger.Error($"Plugin {path} failed to load!");
-                Kernel32.FreeLibrary(handle);
+                NativeMethods.FreeLibrary(handle);
                 continue;
             }
 
-            IntPtr pfn_PluginGetVersion = Kernel32.GetProcAddress(handle, "PluginGetVersion");
+            IntPtr pfn_PluginGetVersion = NativeMethods.GetProcAddress(handle, "PluginGetVersion");
             if (pfn_PluginGetVersion == IntPtr.Zero) {
                 Logger.Error($"Plugin failed to locate PluginGetVersion for {path}!");
                 continue;
             }
 
-            IntPtr pfn_PluginStartup = Kernel32.GetProcAddress(handle, "PluginStartup");
+            IntPtr pfn_PluginStartup = NativeMethods.GetProcAddress(handle, "PluginStartup");
             if (pfn_PluginStartup == IntPtr.Zero) {
                 Logger.Error($"Plugin failed to locate PluginStartup for {path}!");
                 continue;
@@ -276,7 +276,7 @@ public static class Boot {
             PluginGetVersionDelegate PluginGetVersion = Marshal.GetDelegateForFunctionPointer<PluginGetVersionDelegate>(pfn_PluginGetVersion);
             if (PluginGetVersion == null) {
                 Logger.Error($"Plugin failed to locate PluginGetVersionDelegate for {path}!");
-                Kernel32.FreeLibrary(handle);
+                NativeMethods.FreeLibrary(handle);
                 continue;
             }
             PluginGetVersion(&type, (IntPtr)(&version), IntPtr.Zero, &pluginName, IntPtr.Zero);
@@ -284,7 +284,7 @@ public static class Boot {
             PluginStartupDelegate PluginStartup = Marshal.GetDelegateForFunctionPointer<PluginStartupDelegate>(pfn_PluginStartup);
             if (PluginStartup == null) {
                 Logger.Error($"Plugin failed to locate PluginStartupDelegate for {path}!");
-                Kernel32.FreeLibrary(handle);
+                NativeMethods.FreeLibrary(handle);
                 continue;
             }
             PluginStartup(CoreLibraryHandle, (IntPtr)pluginName, DebugCallback);
@@ -292,7 +292,7 @@ public static class Boot {
 
             if (Frontend.CoreAttachPlugin(type, handle) != M64Error.M64ERR_SUCCESS) {
                 Logger.Error($"Plugin {path} failed to load!");
-                Kernel32.FreeLibrary(handle);
+                NativeMethods.FreeLibrary(handle);
                 continue;
             }
 
@@ -310,7 +310,7 @@ public static class Boot {
 
     public static void ShutdownPlugins() {
         foreach (var handle in LoadedPlugins) {
-            Kernel32.FreeLibrary(handle);
+            NativeMethods.FreeLibrary(handle);
         }
 
         foreach (var handle in AllocatedStrings) {
