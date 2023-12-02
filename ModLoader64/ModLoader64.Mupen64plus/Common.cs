@@ -1,9 +1,7 @@
-﻿using System;
+﻿using ModLoader64.Core;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
-
-using static Frontend;
 
 /// <summary>
 /// Enumeration which represents the plugin types in the mupen64plus api
@@ -145,21 +143,24 @@ public unsafe struct RomSettings {
 }
 
 public unsafe class Common {
+    #region Delegate Types
+    public delegate M64Error PluginStartupDelegate(IntPtr CoreLibHandle, IntPtr Context, Frontend.DebugCallbackDelegate DebugCallback);
+    public delegate M64Error PluginShutdownDelegate();
+    //
     public delegate M64Error PluginGetVersionDelegate(M64PluginType* PluginType, IntPtr PluginVersion, IntPtr APIVersion, char** PluginNamePtr, IntPtr Capabilities);
-    public delegate M64Error PluginStartupDelegate(IntPtr CoreLibHandle, IntPtr Context, DebugCallbackDelegate DebugCallback);
+    public delegate M64Error CoreGetAPIVersionsDelegate(IntPtr ConfigVersion, IntPtr DebugVersion, IntPtr VidextVersion, IntPtr ExtraVersion);
+    public delegate char* CoreErrorMessageDelegate(M64Error ReturnCode);
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error PluginGetVersion(M64PluginType* PluginType, IntPtr PluginVersion, IntPtr APIVersion, char** PluginNamePtr, IntPtr Capabilities);
+    #region Delegate Instances
+    public static PluginGetVersionDelegate PluginGetVersion;
+    public static CoreGetAPIVersionsDelegate CoreGetAPIVersions;
+    public static CoreErrorMessageDelegate CoreErrorMessage;
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error CoreGetAPIVersions(IntPtr ConfigVersion, IntPtr DebugVersion, IntPtr VidextVersion, IntPtr ExtraVersion);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static char* CoreErrorMessage(M64Error ReturnCode);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error PluginStartup(IntPtr CoreLibHandle, IntPtr Context, DebugCallbackDelegate DebugCallback);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error PluginShutdown();
+    static Common() {
+        PluginGetVersion = Natives.GetDelegateInstance<PluginGetVersionDelegate>("PluginGetVersion");
+        CoreGetAPIVersions = Natives.GetDelegateInstance<CoreGetAPIVersionsDelegate>("CoreGetAPIVersions");
+        CoreErrorMessage = Natives.GetDelegateInstance<CoreErrorMessageDelegate>("CoreErrorMessage");
+    }
 }

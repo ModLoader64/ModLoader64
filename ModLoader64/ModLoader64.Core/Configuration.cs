@@ -147,10 +147,10 @@ public class ConfigCore : ConfigBase {
         CurrentStateSlot = 0;
         SiDmaDuration = -1;
         PluginDir = "plugins";
-        VideoPlugin = "mupen64plus-video-GLideN64.dll";
-        AudioPlugin = "mupen64plus-audio-sdl.dll";
-        InputPlugin = "mupen64plus-input-sdl.dll";
-        RspPlugin = "mupen64plus-rsp-hle.dll";
+        VideoPlugin = Natives.TransmuteLibraryName("mupen64plus-video-GLideN64");
+        AudioPlugin = Natives.TransmuteLibraryName("mupen64plus-audio-sdl");
+        InputPlugin = Natives.TransmuteLibraryName("mupen64plus-input-sdl");
+        RspPlugin = Natives.TransmuteLibraryName("mupen64plus-rsp-hle");
         ScreenshotPath = "screenshots";
         SaveStatePath = "savestates";
         SaveSRAMPath = "saves";

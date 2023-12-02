@@ -1,5 +1,4 @@
-﻿using ModLoader64.API;
-using System;
+﻿using ModLoader64.Core;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
@@ -7,63 +6,38 @@ namespace ModLoader64.Mupen64plus;
 using static Frontend;
 
 public static class GlobalCallbacks {
-    private delegate void FrameCallbackDelegate(int FrameCount);
-    private delegate void ResetCallbackDelegate(bool HardReset);
-    private delegate void CommonCallbackDelegate();
+    #region Delegate Types
+    public delegate void FrameCallbackDelegate(int FrameCount);
+    public delegate void ResetCallbackDelegate(bool HardReset);
+    public delegate void CommonCallbackDelegate();
+    //
+    public delegate void VISetCallbackDelegate(CommonCallbackDelegate callback);
+    public delegate void ResetSetCallbackDelegate(ResetCallbackDelegate callback);
+    public delegate void PauseSetCallbackDelegate(CommonCallbackDelegate callback);
+    public delegate u32 InstallCodeCallbackDelegate(u32 address, CommonCallbackDelegate pfn);
+    public delegate void UninstallCodeCallbackDelegate(u32 uuid);
+    #endregion
 
+    #region Delegate Instances
+    public static VISetCallbackDelegate VISetCallback;
+    public static ResetSetCallbackDelegate ResetSetCallback;
+    public static PauseSetCallbackDelegate PauseSetCallback;
+    public static InstallCodeCallbackDelegate InstallCodeCallback;
+    public static UninstallCodeCallbackDelegate UninstallCodeCallback;
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    private extern static void VISetCallback(CommonCallbackDelegate callback);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    private extern static void ResetSetCallback(ResetCallbackDelegate callback);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    private extern static void PauseSetCallback(CommonCallbackDelegate callback);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    private extern static u32 InstallCodeCallback(u32 address, CommonCallbackDelegate pfn);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    private extern static void UninstallCodeCallback(u32 uuid);
-
-    private static ImGuiTest ImGui;
-
-    private static u32 ActorInitTestUUID = 0xFFFFFFFF;
-    private static void ActorInitTest() {
-        PluginLogger.Warning("It worked?");
+    static GlobalCallbacks() {
+        VISetCallback = Natives.GetDelegateInstance<VISetCallbackDelegate>("VISetCallback");
+        ResetSetCallback = Natives.GetDelegateInstance<ResetSetCallbackDelegate>("ResetSetCallback");
+        PauseSetCallback = Natives.GetDelegateInstance<PauseSetCallbackDelegate>("PauseSetCallback");
+        InstallCodeCallback = Natives.GetDelegateInstance<InstallCodeCallbackDelegate>("InstallCodeCallback");
+        UninstallCodeCallback = Natives.GetDelegateInstance<UninstallCodeCallbackDelegate>("UninstallCodeCallback");
     }
 
     public static unsafe void OnFrame(int FrameCount) {
-        if (FrameCount == 10) {
-            ActorInitTestUUID = InstallCodeCallback(0x80020FDC, ActorInitTest);
-        }
-
-        if (FrameCount > 200) {
-            ImGui = new ImGuiTest();
-            ImGui.Initialize(MUPEN_LIBRARY);
-            Core.EmulatedMemory.Write(0x8011A604, (u16)999);
-            Core.EmulatedMemory.Write32(0x83000000, 0xDEADBEEF);
-            if (Core.EmulatedMemory.Read32(0x83000000) != 0xDEADBEEF) {
-                //PluginLogger.Error($"We are fucked! {Core.EmulatedMemory.Read32(0x83000000).ToString("X")}\n");
-            }
-        }
-
-        //Core.EmulatedRom.Write8(0x3E, (u8)'J');
-        //PluginLogger.Info(Core.EmulatedRom.Read32(0x00).ToString("X").PadLeft(8, '0')); // 80 37 12 40 for oot
-        u8 l0 = Core.EmulatedRom.Read8(0x00); // 80
-        u8 l1 = Core.EmulatedRom.Read8(0x01); // 37
-        u8 r0 = Core.EmulatedRom.Read8(0x02); // 12
-        u8 r1 = Core.EmulatedRom.Read8(0x03); // 40
-        //PluginLogger.Info($"{l0.ToString("X").PadLeft(2, '0')} {l1.ToString("X").PadLeft(2, '0')} {r0.ToString("X").PadLeft(2, '0')} {r1.ToString("X").PadLeft(2, '0')}");
     }
 
     public static void OnVI() {
-        bool open = true;
-        if (ImGui != null && ImGui.Initialized) {
-            ImGui.Begin("Test", ref open, 0);
-            ImGui.End();
-        }
     }
 
     public static void OnReset(bool HardReset) {

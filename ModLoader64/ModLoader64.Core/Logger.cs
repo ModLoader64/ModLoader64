@@ -1,5 +1,3 @@
-using System;
-
 using ModLoader64.Common;
 
 namespace ModLoader64.Core;

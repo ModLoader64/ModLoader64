@@ -1,6 +1,4 @@
-﻿using ModLoader64.Core;
-using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace ModLoader64.Core;
 

@@ -14,7 +14,7 @@ public class ModLoader64 {
     public static bool RomWasLoaded = false;
     public static Configuration Config = new Configuration();
 
-    private static IntPtr RomPtr = IntPtr.Zero;
+    private static IntPtr romPtr = IntPtr.Zero;
 
     /// <summary>
     /// Initializes Mupen64plus
@@ -33,7 +33,7 @@ public class ModLoader64 {
             return false;
         }
 
-        if (Boot.InitializeROM(ref RomPtr) == false) {
+        if (Boot.InitializeROM(ref romPtr) == false) {
             Logger.Error("InitializeROM failed!");
             return false;
         }
@@ -68,8 +68,8 @@ public class ModLoader64 {
 
 
         Boot.ShutdownPlugins();
-        if (RomPtr != IntPtr.Zero) {
-            Marshal.FreeHGlobal(RomPtr);
+        if (romPtr != IntPtr.Zero) {
+            Marshal.FreeHGlobal(romPtr);
         }
 
         if (CoreWasInitialized) {

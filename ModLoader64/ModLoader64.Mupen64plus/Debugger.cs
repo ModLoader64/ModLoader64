@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ModLoader64.Core;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
@@ -69,69 +69,78 @@ public static unsafe class Debugger {
         [FieldOffset(0x08)] public u32 Flags;
     };
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error DebugSetCoreCompare();
+    #region Delegate Types
+    public delegate M64Error DebugSetCoreCompareDelegate();
+    public delegate M64Error DebugSetCallbacksDelegate();
+    public delegate M64Error DebugSetRunStateDelegate(M64DebuggerRunState runstate);
+    public delegate s32 DebugGetStateDelegate(M64DebuggerState statenum);
+    public delegate M64Error DebugStepDelegate();
+    public delegate void DebugDecodeOpDelegate(u32 instruction, char* op, char* args, s32 pc);
+    public delegate void DebugMemGetRecompInfoDelegate(M64DebuggerMemoryInfo recomp_type, u32 address, s32 index);
+    public delegate s32 DebugMemGetMemInfoDelegate(M64DebuggerMemoryInfo mem_info_type, u32 address);
+    public delegate void DebugMemGetPointerDelegate(M64DebuggerMemoryPointerType mem_ptr_type);
+    public delegate u32 DebugMemRead64Delegate(u32 address);
+    public delegate u32 DebugMemRead32Delegate(u32 address);
+    public delegate u32 DebugMemRead16Delegate(u32 address);
+    public delegate u32 DebugMemRead8Delegate(u32 address);
+    public delegate void DebugMemWrite64Delegate(u32 address, u64 value);
+    public delegate void DebugMemWrite32Delegate(u32 address, u32 value);
+    public delegate void DebugMemWrite16Delegate(u32 address, u16 value);
+    public delegate void DebugMemWrite8Delegate(u32 address, u8 value);
+    public delegate void DebugGetCPUDataPtrDelegate(M64DebuggerCpuData cpu_data_type);
+    public delegate s32 DebugBreakpointLookupDelegate(u32 address, u32 size, u32 flags);
+    public delegate s32 DebugBreakpointCommandDelegate(M64DebuggerBreakpointCommand command, u32 index, Breakpoint* bkp);
+    public delegate void DebugBreakpointTriggeredByDelegate(UIntPtr flags, UIntPtr accessed);
+    public delegate u32 DebugVirtualToPhysicalDelegate(u32 address);
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error DebugSetCallbacks();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error DebugSetRunState(M64DebuggerRunState runstate);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 DebugGetState(M64DebuggerState statenum);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static M64Error DebugStep();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugDecodeOp(u32 instruction, char* op, char* args, s32 pc);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemGetRecompInfo(M64DebuggerMemoryInfo recomp_type, u32 address, s32 index);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 DebugMemGetMemInfo(M64DebuggerMemoryInfo mem_info_type, u32 address);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemGetPointer(M64DebuggerMemoryPointerType mem_ptr_type);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DebugMemRead64(u32 address);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DebugMemRead32(u32 address);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DebugMemRead16(u32 address);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DebugMemRead8(u32 address);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite64(u32 address, u64 value);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite32(u32 address, u32 value);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite16(u32 address, u16 value);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugMemWrite8(u32 address, u8 value);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugGetCPUDataPtr(M64DebuggerCpuData cpu_data_type);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 DebugBreakpointLookup(u32 address, u32 size, u32 flags);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 DebugBreakpointCommand(M64DebuggerBreakpointCommand command, u32 index, Breakpoint* bkp);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void DebugBreakpointTriggeredBy(UIntPtr flags, UIntPtr accessed);
+    #region Delegate Instances
+    public static DebugSetCoreCompareDelegate DebugSetCoreCompare;
+    public static DebugSetCallbacksDelegate DebugSetCallbacks;
+    public static DebugSetRunStateDelegate DebugSetRunState;
+    public static DebugGetStateDelegate DebugGetState;
+    public static DebugStepDelegate DebugStep;
+    public static DebugDecodeOpDelegate DebugDecodeOp;
+    public static DebugMemGetRecompInfoDelegate DebugMemGetRecompInfo;
+    public static DebugMemGetMemInfoDelegate DebugMemGetMemInfo;
+    public static DebugMemGetPointerDelegate DebugMemGetPointer;
+    public static DebugMemRead64Delegate DebugMemRead64;
+    public static DebugMemRead32Delegate DebugMemRead32;
+    public static DebugMemRead16Delegate DebugMemRead16;
+    public static DebugMemRead8Delegate DebugMemRead8;
+    public static DebugMemWrite64Delegate DebugMemWrite64;
+    public static DebugMemWrite32Delegate DebugMemWrite32;
+    public static DebugMemWrite16Delegate DebugMemWrite16;
+    public static DebugMemWrite8Delegate DebugMemWrite8;
+    public static DebugGetCPUDataPtrDelegate DebugGetCPUDataPtr;
+    public static DebugBreakpointLookupDelegate DebugBreakpointLookup;
+    public static DebugBreakpointCommandDelegate DebugBreakpointCommand;
+    public static DebugBreakpointTriggeredByDelegate DebugBreakpointTriggeredBy;
+    public static DebugVirtualToPhysicalDelegate DebugVirtualToPhysical;
+    #endregion
     
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DebugVirtualToPhysical(u32 address);
+    static Debugger() {
+        DebugSetCoreCompare = Natives.GetDelegateInstance<DebugSetCoreCompareDelegate>("DebugSetCoreCompare");
+        DebugSetCallbacks = Natives.GetDelegateInstance<DebugSetCallbacksDelegate>("DebugSetCallbacks");
+        DebugSetRunState = Natives.GetDelegateInstance<DebugSetRunStateDelegate>("DebugSetRunState");
+        DebugGetState = Natives.GetDelegateInstance<DebugGetStateDelegate>("DebugGetState");
+        DebugStep = Natives.GetDelegateInstance<DebugStepDelegate>("DebugStep");
+        DebugDecodeOp = Natives.GetDelegateInstance<DebugDecodeOpDelegate>("DebugDecodeOp");
+        DebugMemGetRecompInfo = Natives.GetDelegateInstance<DebugMemGetRecompInfoDelegate>("DebugMemGetRecompInfo");
+        DebugMemGetMemInfo = Natives.GetDelegateInstance<DebugMemGetMemInfoDelegate>("DebugMemGetMemInfo");
+        DebugMemGetPointer = Natives.GetDelegateInstance<DebugMemGetPointerDelegate>("DebugMemGetPointer");
+        DebugMemRead64 = Natives.GetDelegateInstance<DebugMemRead64Delegate>("DebugMemRead64");
+        DebugMemRead32 = Natives.GetDelegateInstance<DebugMemRead32Delegate>("DebugMemRead32");
+        DebugMemRead16 = Natives.GetDelegateInstance<DebugMemRead16Delegate>("DebugMemRead16");
+        DebugMemRead8 = Natives.GetDelegateInstance<DebugMemRead8Delegate>("DebugMemRead8");
+        DebugMemWrite64 = Natives.GetDelegateInstance<DebugMemWrite64Delegate>("DebugMemWrite64");
+        DebugMemWrite32 = Natives.GetDelegateInstance<DebugMemWrite32Delegate>("DebugMemWrite32");
+        DebugMemWrite16 = Natives.GetDelegateInstance<DebugMemWrite16Delegate>("DebugMemWrite16");
+        DebugMemWrite8 = Natives.GetDelegateInstance<DebugMemWrite8Delegate>("DebugMemWrite8");
+        DebugGetCPUDataPtr = Natives.GetDelegateInstance<DebugGetCPUDataPtrDelegate>("DebugGetCPUDataPtr");
+        DebugBreakpointLookup = Natives.GetDelegateInstance<DebugBreakpointLookupDelegate>("DebugBreakpointLookup");
+        DebugBreakpointCommand = Natives.GetDelegateInstance<DebugBreakpointCommandDelegate>("DebugBreakpointCommand");
+        DebugBreakpointTriggeredBy = Natives.GetDelegateInstance<DebugBreakpointTriggeredByDelegate>("DebugBreakpointTriggeredBy");
+        DebugVirtualToPhysical = Natives.GetDelegateInstance<DebugVirtualToPhysicalDelegate>("DebugVirtualToPhysical");
+    }
 }

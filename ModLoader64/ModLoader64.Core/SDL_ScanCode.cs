@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModLoader64.Core; 
+﻿namespace ModLoader64.Core; 
 
 public enum SDL_ScanCode : int {
     UNKNOWN = 0,

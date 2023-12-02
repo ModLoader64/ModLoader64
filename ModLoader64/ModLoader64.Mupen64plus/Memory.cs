@@ -1,23 +1,29 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using ModLoader64.Core;
 
 namespace ModLoader64.Mupen64plus;
 
-using static Frontend;
-
 public static class Memory {
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static IntPtr Memory_GetBaseAddress();
+    #region Delegate Types
+    public delegate IntPtr Memory_GetBaseAddressDelegate();
+    public delegate IntPtr ROM_GetBaseAddressDelegate();
+    public delegate u32 ROM_GetBaseSizeDelegate();
+    public delegate void InvalidateCachedCodeDelegate();
+    public delegate void InvalidateSpecificCachedCodeDelegate(u32 address, u32 size);
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static IntPtr ROM_GetBaseAddress();
+    #region Delegate Instances
+    public static Memory_GetBaseAddressDelegate Memory_GetBaseAddress;
+    public static ROM_GetBaseAddressDelegate ROM_GetBaseAddress;
+    public static ROM_GetBaseSizeDelegate ROM_GetBaseSize;
+    public static InvalidateCachedCodeDelegate InvalidateCachedCode;
+    public static InvalidateSpecificCachedCodeDelegate InvalidateSpecificCachedCode;
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 ROM_GetBaseSize();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void InvalidateCachedCode();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void InvalidateSpecificCachedCode(u32 address, u32 size);
+    static Memory() {
+        Memory_GetBaseAddress = Natives.GetDelegateInstance<Memory_GetBaseAddressDelegate>("Memory_GetBaseAddress");
+        ROM_GetBaseAddress = Natives.GetDelegateInstance<ROM_GetBaseAddressDelegate>("ROM_GetBaseAddress");
+        ROM_GetBaseSize = Natives.GetDelegateInstance<ROM_GetBaseSizeDelegate>("ROM_GetBaseSize");
+        InvalidateCachedCode = Natives.GetDelegateInstance<InvalidateCachedCodeDelegate>("InvalidateCachedCode");
+        InvalidateSpecificCachedCode = Natives.GetDelegateInstance<InvalidateSpecificCachedCodeDelegate>("InvalidateSpecificCachedCode");
+    }
 }
