@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ModLoader64.Core;
 
@@ -25,6 +26,7 @@ public static class Natives {
     /// Static constructor
     /// </summary>
     static Natives() {
+        Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location)));
         MUPEN_LIBRARY = TransmuteLibraryName("mupen64plus");
         MupenLibraryHandle = LoadLibrary(MUPEN_LIBRARY);
         if (MupenLibraryHandle == IntPtr.Zero)
