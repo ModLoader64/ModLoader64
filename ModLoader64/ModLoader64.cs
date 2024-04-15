@@ -20,6 +20,7 @@ public class ModLoader64  : IBinding
     public static Configuration Config = new Configuration();
 
     private static IntPtr romPtr = IntPtr.Zero;
+    private static string rom = "";
 
     /// <summary>
     /// Initializes Mupen64plus
@@ -121,9 +122,9 @@ public class ModLoader64  : IBinding
         Boot.StartGo();
 
         Boot.ShutdownPlugins();
-        if (RomPtr != IntPtr.Zero)
+        if (romPtr != IntPtr.Zero)
         {
-            Marshal.FreeHGlobal(RomPtr);
+            Marshal.FreeHGlobal(romPtr);
         }
 
         if (CoreWasInitialized)

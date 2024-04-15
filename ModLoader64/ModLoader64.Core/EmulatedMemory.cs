@@ -7,10 +7,9 @@ namespace ModLoader64.Core;
 public unsafe class EmulatedMemory : IMemory{
     private const u32 VADDR_BASE = 0x80000000;
     private const u32 MEMORY_SIZE_NORMAL = 0x03F00000;
-    private const u32 MEMORY_SIZE = 0x40000000;
+    private const u32 MEMORY_SIZE = 0x03F00000;
     private const u64 VADDR2_BASE = 0x100000000;
     private const u32 VADDR_MASK = 0x0FFFFFFF;
-    private const u32 MEMORY_SIZE = 0x03F00000;
 
     private static u8* _Memory = null;
 
@@ -97,7 +96,7 @@ public unsafe class EmulatedMemory : IMemory{
     /// </summary>
     /// <param name="address">Where to read</param>
     /// <returns>Value read, 0 on error</returns>
-    public static u32 Read32(u64 address) {
+    public static u32 ReadU32(u64 address) {
         if (!MemorySafetyCheck(ref address, Unsafe.SizeOf<u32>())) {
             return 0;
         }
