@@ -20,7 +20,7 @@ public class ModLoader64  : IBinding
     public static Configuration Config = new Configuration();
 
     private static IntPtr romPtr = IntPtr.Zero;
-    private static string rom = "";
+    public static string rom = "";
 
     /// <summary>
     /// Initializes Mupen64plus

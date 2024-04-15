@@ -219,7 +219,7 @@ public static class Boot {
     }
 
     public static unsafe bool InitializeROM(ref IntPtr romPtr) {
-        string romPath = "oot.z64";
+        string romPath = ModLoader64.rom;
         byte[] romData = File.ReadAllBytes(romPath);
         romPtr = Marshal.AllocHGlobal(romData.Length);
         if (romPtr == IntPtr.Zero) {
