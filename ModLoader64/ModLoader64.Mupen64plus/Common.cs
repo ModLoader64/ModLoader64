@@ -150,17 +150,23 @@ public unsafe class Common {
     public delegate M64Error PluginGetVersionDelegate(M64PluginType* PluginType, IntPtr PluginVersion, IntPtr APIVersion, char** PluginNamePtr, IntPtr Capabilities);
     public delegate M64Error CoreGetAPIVersionsDelegate(IntPtr ConfigVersion, IntPtr DebugVersion, IntPtr VidextVersion, IntPtr ExtraVersion);
     public delegate char* CoreErrorMessageDelegate(M64Error ReturnCode);
+    public delegate IntPtr GetCurrentWindowDelegate();
+    public delegate IntPtr GetCurrentContextDelegate();
     #endregion
 
     #region Delegate Instances
     public static PluginGetVersionDelegate PluginGetVersion;
     public static CoreGetAPIVersionsDelegate CoreGetAPIVersions;
     public static CoreErrorMessageDelegate CoreErrorMessage;
+    public static GetCurrentWindowDelegate GetCurrentWindow;
+    public static GetCurrentContextDelegate GetCurrentContext;
     #endregion
 
     static Common() {
         PluginGetVersion = Natives.GetDelegateInstance<PluginGetVersionDelegate>("PluginGetVersion");
         CoreGetAPIVersions = Natives.GetDelegateInstance<CoreGetAPIVersionsDelegate>("CoreGetAPIVersions");
         CoreErrorMessage = Natives.GetDelegateInstance<CoreErrorMessageDelegate>("CoreErrorMessage");
+        GetCurrentWindow = Natives.GetDelegateInstance<GetCurrentWindowDelegate>("GetCurrentWindow");
+        GetCurrentContext = Natives.GetDelegateInstance<GetCurrentContextDelegate>("GetCurrentContext");
     }
 }
