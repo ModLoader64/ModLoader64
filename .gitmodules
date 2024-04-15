@@ -16,9 +16,6 @@
 [submodule "mupen64plus-core"]
 	path = mupen64plus-core
 	url = https://github.com/ModLoader64/mupen64plus-core.git
-[submodule "ImGui.NET"]
-	path = ImGui.NET
-	url = https://github.com/ModLoader64/ImGui.NET
 [submodule "ModLoader"]
 	path = ModLoader
 	url = https://github.com/ModLoader64/ModLoader
