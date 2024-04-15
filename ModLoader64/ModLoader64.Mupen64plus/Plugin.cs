@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ModLoader64.Core;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
@@ -112,129 +112,138 @@ public static unsafe class Plugin {
         [FieldOffset(0x0C)] public s32 Type;
     }
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 RomOpen();
+    #region Delegate Types
+    public delegate s32 RomOpenDelegate();
+    public delegate void RomClosedDelegate();
+    public delegate void ChangeWindowDelegate();
+    public delegate s32 InitiateGFXDelegate(GfxInfo Gfx_Info);
+    public delegate void MoveScreenDelegate(s32 x, s32 y);
+    public delegate void ProcessDListDelegate();
+    public delegate void ProcessRDPListDelegate();
+    public delegate void ShowCFBDelegate();
+    public delegate void UpdateScreenDelegate();
+    public delegate void ViStatusChangedDelegate();
+    public delegate void ViWidthChangedDelegate();
+    public delegate void ReadScreen2Delegate(s32* dest, s32* width, s32* height, s32 front);
+    public delegate void SetRenderingCallbackDelegate();
+    public delegate void ResizeVideoOutputDelegate(s32 width, s32 height);
+    public delegate void FBReadDelegate(u32 addr);
+    public delegate void FBWriteDelegate(u32 addr, u32 size);
+    public delegate void FBGetFrameBufferInfoDelegate(s32* p);
+    public delegate void AiDacrateChangedDelegate(s32 SystemType);
+    public delegate void AiLenChangedDelegate();
+    public delegate s32 InitiateAudioDelegate(AudioInfo Audio_Info);
+    public delegate void ProcessAListDelegate();
+    public delegate void SetSpeedFactorDelegate(s32 percent);
+    public delegate void VolumeUpDelegate();
+    public delegate void VolumeDownDelegate();
+    public delegate s32 VolumeGetLevelDelegate();
+    public delegate void VolumeSetLevelDelegate(s32 level);
+    public delegate void VolumeMuteDelegate();
+    public delegate char* VolumeGetStringDelegate();
+    public delegate void ControllerCommandDelegate(s32 Control, u8* Command);
+    public delegate void GetKeysDelegate(s32 Control, Buttons* Keys);
+    public delegate void InitiateControllersDelegate(ControlInfo ControlInfo);
+    public delegate void ReadControllerDelegate(s32 Control, u8* Command);
+    public delegate void SDL_KeyDownDelegate(s32 keymod, s32 keysym);
+    public delegate void SDL_KeyUpDelegate(s32 keymod, s32 keysym);
+    public delegate void RenderCallbackDelegate();
+    public delegate void SendVRUWordDelegate(u16 length, u16* word, u8 lang);
+    public delegate void SetMicStateDelegate(s32 state);
+    public delegate void ReadVRUResultsDelegate(u16* error_flags, u16* num_results, u16* mic_level, u16* voice_level, u16* voice_length, u16* matches);
+    public delegate void ClearVRUWordsDelegate(u8 length);
+    public delegate void SetVRUWordMaskDelegate(u8 length, u8* mask);
+    public delegate u32 DoRspCyclesDelegate(u32 Cycles);
+    public delegate void InitiateRSPDelegate(RSPInfo Rsp_Info, u32* CycleCount);
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void RomClosed();
+    #region Delegate Instances
+    public static RomOpenDelegate RomOpen;
+    public static RomClosedDelegate RomClosed;
+    public static ChangeWindowDelegate ChangeWindow;
+    public static InitiateGFXDelegate InitiateGFX;
+    public static MoveScreenDelegate MoveScreen;
+    public static ProcessDListDelegate ProcessDList;
+    public static ProcessRDPListDelegate ProcessRDPList;
+    public static ShowCFBDelegate ShowCFB;
+    public static UpdateScreenDelegate UpdateScreen;
+    public static ViStatusChangedDelegate ViStatusChanged;
+    public static ViWidthChangedDelegate ViWidthChanged;
+    public static ReadScreen2Delegate ReadScreen2;
+    public static SetRenderingCallbackDelegate SetRenderingCallback;
+    public static ResizeVideoOutputDelegate ResizeVideoOutput;
+    public static FBReadDelegate FBRead;
+    public static FBWriteDelegate FBWrite;
+    public static FBGetFrameBufferInfoDelegate FBGetFrameBufferInfo;
+    public static AiDacrateChangedDelegate AiDacrateChanged;
+    public static AiLenChangedDelegate AiLenChanged;
+    public static InitiateAudioDelegate InitiateAudio;
+    public static ProcessAListDelegate ProcessAList;
+    public static SetSpeedFactorDelegate SetSpeedFactor;
+    public static VolumeUpDelegate VolumeUp;
+    public static VolumeDownDelegate VolumeDown;
+    public static VolumeGetLevelDelegate VolumeGetLevel;
+    public static VolumeSetLevelDelegate VolumeSetLevel;
+    public static VolumeMuteDelegate VolumeMute;
+    public static VolumeGetStringDelegate VolumeGetString;
+    public static ControllerCommandDelegate ControllerCommand;
+    public static GetKeysDelegate GetKeys;
+    public static InitiateControllersDelegate InitiateControllers;
+    public static ReadControllerDelegate ReadController;
+    public static SDL_KeyDownDelegate SDL_KeyDown;
+    public static SDL_KeyUpDelegate SDL_KeyUp;
+    public static RenderCallbackDelegate RenderCallback;
+    public static SendVRUWordDelegate SendVRUWord;
+    public static SetMicStateDelegate SetMicState;
+    public static ReadVRUResultsDelegate ReadVRUResults;
+    public static ClearVRUWordsDelegate ClearVRUWords;
+    public static SetVRUWordMaskDelegate SetVRUWordMask;
+    public static DoRspCyclesDelegate DoRspCycles;
+    public static InitiateRSPDelegate InitiateRSP;
+    #endregion
 
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ChangeWindow();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 InitiateGFX(GfxInfo Gfx_Info);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void MoveScreen(s32 x, s32 y);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ProcessDList();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ProcessRDPList();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ShowCFB();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void UpdateScreen();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ViStatusChanged();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ViWidthChanged();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadScreen2(s32* dest, s32* width, s32* height, s32 front);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetRenderingCallback();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ResizeVideoOutput(s32 width, s32 height);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBRead(u32 addr);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBWrite(u32 addr, u32 size);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void FBGetFrameBufferInfo(s32* p);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void AiDacrateChanged(s32 SystemType);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void AiLenChanged();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 InitiateAudio(AudioInfo Audio_Info);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ProcessAList();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetSpeedFactor(s32 percent);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void VolumeUp();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void VolumeDown();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static s32 VolumeGetLevel();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void VolumeSetLevel(s32 level);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void VolumeMute();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static char* VolumeGetString();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ControllerCommand(s32 Control, u8* Command);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void GetKeys(s32 Control, Buttons* Keys);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void InitiateControllers(ControlInfo ControlInfo);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadController(s32 Control, u8* Command);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SDL_KeyDown(s32 keymod, s32 keysym);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SDL_KeyUp(s32 keymod, s32 keysym);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void RenderCallback();
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SendVRUWord(u16 length, u16* word, u8 lang);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetMicState(s32 state);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ReadVRUResults(u16* error_flags, u16* num_results, u16* mic_level, u16* voice_level, u16* voice_length, u16* matches);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void ClearVRUWords(u8 length);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void SetVRUWordMask(u8 length, u8* mask);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static u32 DoRspCycles(u32 Cycles);
-
-    [DllImport(MUPEN_LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-    public extern static void InitiateRSP(RSPInfo Rsp_Info, u32* CycleCount);
+    static Plugin() {
+        RomOpen = Natives.GetDelegateInstance<RomOpenDelegate>("RomOpen");
+        RomClosed = Natives.GetDelegateInstance<RomClosedDelegate>("RomClosed");
+        ChangeWindow = Natives.GetDelegateInstance<ChangeWindowDelegate>("ChangeWindow");
+        InitiateGFX = Natives.GetDelegateInstance<InitiateGFXDelegate>("InitiateGFX");
+        MoveScreen = Natives.GetDelegateInstance<MoveScreenDelegate>("MoveScreen");
+        ProcessDList = Natives.GetDelegateInstance<ProcessDListDelegate>("ProcessDList");
+        ProcessRDPList = Natives.GetDelegateInstance<ProcessRDPListDelegate>("ProcessRDPList");
+        ShowCFB = Natives.GetDelegateInstance<ShowCFBDelegate>("ShowCFB");
+        UpdateScreen = Natives.GetDelegateInstance<UpdateScreenDelegate>("UpdateScreen");
+        ViStatusChanged = Natives.GetDelegateInstance<ViStatusChangedDelegate>("ViStatusChanged");
+        ViWidthChanged = Natives.GetDelegateInstance<ViWidthChangedDelegate>("ViWidthChanged");
+        ReadScreen2 = Natives.GetDelegateInstance<ReadScreen2Delegate>("ReadScreen2");
+        SetRenderingCallback = Natives.GetDelegateInstance<SetRenderingCallbackDelegate>("SetRenderingCallback");
+        ResizeVideoOutput = Natives.GetDelegateInstance<ResizeVideoOutputDelegate>("ResizeVideoOutput");
+        FBRead = Natives.GetDelegateInstance<FBReadDelegate>("FBRead");
+        FBWrite = Natives.GetDelegateInstance<FBWriteDelegate>("FBWrite");
+        FBGetFrameBufferInfo = Natives.GetDelegateInstance<FBGetFrameBufferInfoDelegate>("FBGetFrameBufferInfo");
+        AiDacrateChanged = Natives.GetDelegateInstance<AiDacrateChangedDelegate>("AiDacrateChanged");
+        AiLenChanged = Natives.GetDelegateInstance<AiLenChangedDelegate>("AiLenChanged");
+        InitiateAudio = Natives.GetDelegateInstance<InitiateAudioDelegate>("InitiateAudio");
+        ProcessAList = Natives.GetDelegateInstance<ProcessAListDelegate>("ProcessAList");
+        SetSpeedFactor = Natives.GetDelegateInstance<SetSpeedFactorDelegate>("SetSpeedFactor");
+        VolumeUp = Natives.GetDelegateInstance<VolumeUpDelegate>("VolumeUp");
+        VolumeDown = Natives.GetDelegateInstance<VolumeDownDelegate>("VolumeDown");
+        VolumeGetLevel = Natives.GetDelegateInstance<VolumeGetLevelDelegate>("VolumeGetLevel");
+        VolumeSetLevel = Natives.GetDelegateInstance<VolumeSetLevelDelegate>("VolumeSetLevel");
+        VolumeMute = Natives.GetDelegateInstance<VolumeMuteDelegate>("VolumeMute");
+        VolumeGetString = Natives.GetDelegateInstance<VolumeGetStringDelegate>("VolumeGetString");
+        ControllerCommand = Natives.GetDelegateInstance<ControllerCommandDelegate>("ControllerCommand");
+        GetKeys = Natives.GetDelegateInstance<GetKeysDelegate>("GetKeys");
+        InitiateControllers = Natives.GetDelegateInstance<InitiateControllersDelegate>("InitiateControllers");
+        ReadController = Natives.GetDelegateInstance<ReadControllerDelegate>("ReadController");
+        SDL_KeyDown = Natives.GetDelegateInstance<SDL_KeyDownDelegate>("SDL_KeyDown");
+        SDL_KeyUp = Natives.GetDelegateInstance<SDL_KeyUpDelegate>("SDL_KeyUp");
+        RenderCallback = Natives.GetDelegateInstance<RenderCallbackDelegate>("RenderCallback");
+        SendVRUWord = Natives.GetDelegateInstance<SendVRUWordDelegate>("SendVRUWord");
+        SetMicState = Natives.GetDelegateInstance<SetMicStateDelegate>("SetMicState");
+        ReadVRUResults = Natives.GetDelegateInstance<ReadVRUResultsDelegate>("ReadVRUResults");
+        ClearVRUWords = Natives.GetDelegateInstance<ClearVRUWordsDelegate>("ClearVRUWords");
+        SetVRUWordMask = Natives.GetDelegateInstance<SetVRUWordMaskDelegate>("SetVRUWordMask");
+        DoRspCycles = Natives.GetDelegateInstance<DoRspCyclesDelegate>("DoRspCycles");
+        InitiateRSP = Natives.GetDelegateInstance<InitiateRSPDelegate>("InitiateRSP");
+    }
 }

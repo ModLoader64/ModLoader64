@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
 
@@ -43,22 +42,23 @@ public static unsafe class VideoExtension {
     public delegate u32 VidExtFuncGLGetDefaultFramebuffer();
 
     // TODO: the offsets will be different for 32 bit, we might need a better way to do this
+    // FIXME: C# Marshall is stupid and doesn't like pointers at 4-byte offsets??
     [StructLayout(LayoutKind.Explicit, Size = 0x74)]
     public struct VideoExtensionFunctions {
         [FieldOffset(0x00)] public u32 Functions;
-        [FieldOffset(0x04)] public IntPtr VidExtFuncInit;
-        [FieldOffset(0x0C)] public IntPtr VidExtFuncQuit;
-        [FieldOffset(0x14)] public IntPtr VidExtFuncListModes;
-        [FieldOffset(0x1C)] public IntPtr VidExtFuncListRates;
-        [FieldOffset(0x24)] public IntPtr VidExtFuncSetMode;
-        [FieldOffset(0x2C)] public IntPtr VidExtFuncSetModeWithRate;
-        [FieldOffset(0x34)] public IntPtr VidExtFuncGLGetProc;
-        [FieldOffset(0x3C)] public IntPtr VidExtFuncGLSetAttr;
-        [FieldOffset(0x44)] public IntPtr VidExtFuncGLGetAttr;
-        [FieldOffset(0x4C)] public IntPtr VidExtFuncGLSwapBuf;
-        [FieldOffset(0x54)] public IntPtr VidExtFuncSetCaption;
-        [FieldOffset(0x5C)] public IntPtr u64;
-        [FieldOffset(0x64)] public IntPtr VidExtFuncResizeWindow;
-        [FieldOffset(0x6C)] public IntPtr VidExtFuncGLGetDefaultFramebuffer;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x04)] public VidExtFuncInitDelegate VidExtFuncInit;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x0C)] public VidExtFuncQuitDelegate VidExtFuncQuit;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x14)] public VidExtFuncListModesDelegate VidExtFuncListModes;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x1C)] public VidExtFuncListRatesDelegate VidExtFuncListRates;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x24)] public VidExtFuncSetModeDelegate VidExtFuncSetMode;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x2C)] public VidExtFuncSetModeWithRateDelegate VidExtFuncSetModeWithRate;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x34)] public VidExtFuncGLGetProcDelegate VidExtFuncGLGetProc;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x3C)] public VidExtFuncGLSetAttrDelegate VidExtFuncGLSetAttr;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x44)] public VidExtFuncGLGetAttrDelegate VidExtFuncGLGetAttr;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x4C)] public VidExtFuncGLSwapBufDelegate VidExtFuncGLSwapBuf;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x54)] public VidExtFuncSetCaptionDelegate VidExtFuncSetCaption;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x5C)] public VidExtFuncToggleFSDelegate VidExtFuncToggleFS;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x64)] public VidExtFuncResizeWindowDelegate VidExtFuncResizeWindow;
+        [MarshalAs(UnmanagedType.FunctionPtr)] [FieldOffset(0x6C)] public VidExtFuncGLGetDefaultFramebuffer VidExtFuncGLGetDefaultFramebuffer;
     };
 }

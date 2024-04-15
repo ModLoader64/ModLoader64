@@ -1,20 +1,19 @@
 ﻿
-using System;
 using System.Runtime.InteropServices;
+using ModLoader64.Mupen64plus;
 
 namespace ModLoader64.Core;
 
-using Mupen64plus;
-using static Mupen64plus.Common;
-
 public static class Boot {
     private static IntPtr ConfigCore = IntPtr.Zero;
+    private static IntPtr ConfigCoreEvents = IntPtr.Zero;
     private static IntPtr ConfigVideo = IntPtr.Zero;
+    private static IntPtr ConfigVideoGlideN64 = IntPtr.Zero;
     private static IntPtr ConfigTransferpak = IntPtr.Zero;
     private static IntPtr Config64DD = IntPtr.Zero;
-    private static IntPtr ConfigUIConsole = IntPtr.Zero;
     private static IntPtr CoreLibraryHandle = IntPtr.Zero;
     private static List<IntPtr> LoadedPlugins = new List<IntPtr>();
+    private static List<IntPtr> AllocatedStrings = new List<IntPtr>();
 
     /// <summary>
     /// Convert string to a cstring
@@ -28,6 +27,7 @@ public static class Boot {
             Logger.Warning($"Failed to convert string {input}!");
         }
 
+        AllocatedStrings.Append((IntPtr)output);
         return output;
     }
 
@@ -46,7 +46,7 @@ public static class Boot {
 
     public static unsafe bool InitializeCoreStartup() {
         // should get the same handle as the one that dotnet loaded?
-        CoreLibraryHandle = Kernel32.LoadLibrary("mupen64plus.dll");
+        CoreLibraryHandle = Natives.LoadLibrary(Natives.TransmuteLibraryName("mupen64plus"));
         if (CoreLibraryHandle == IntPtr.Zero) {
             Logger.Error($"Couldn't load core library!");
             return false;
@@ -67,7 +67,7 @@ public static class Boot {
         char* pluginName = (char*)IntPtr.Zero;
         nint api = 0;
         nint capabilities = 0;
-        if (PluginGetVersion(&type, (IntPtr)(&version), (IntPtr)(&api), &pluginName, (IntPtr)(&capabilities)) != M64Error.M64ERR_SUCCESS) {
+        if (Mupen64plus.Common.PluginGetVersion(&type, (IntPtr)(&version), (IntPtr)(&api), &pluginName, (IntPtr)(&capabilities)) != M64Error.M64ERR_SUCCESS) {
             Logger.Error("Failed to get core plugin version info!");
             return false;
         }
@@ -78,7 +78,7 @@ public static class Boot {
         }
 
         s32 ConfigAPIVersion, DebugAPIVersion, VidextAPIVersion;
-        if (CoreGetAPIVersions((IntPtr)(&ConfigAPIVersion), (IntPtr)(&DebugAPIVersion), (IntPtr)(&VidextAPIVersion), IntPtr.Zero) != M64Error.M64ERR_SUCCESS) {
+        if (Mupen64plus.Common.CoreGetAPIVersions((IntPtr)(&ConfigAPIVersion), (IntPtr)(&DebugAPIVersion), (IntPtr)(&VidextAPIVersion), IntPtr.Zero) != M64Error.M64ERR_SUCCESS) {
             Logger.Error("Core library broken; no CoreAPIVersionFunc() function found.");
             return false;
         }
@@ -97,15 +97,12 @@ public static class Boot {
     }
 
     public static unsafe  bool InitializeConfig() {
-        const float CONFIG_PARAM_VERSION = 1.00f;
-        char* versionString = StringToAnsiString("Version");
-        bool saveConfig = false;
-
         IntPtr configCore = IntPtr.Zero;
+        IntPtr configCoreEvents = IntPtr.Zero;
         IntPtr configVideo = IntPtr.Zero;
+        IntPtr configVideoGlideN64 = IntPtr.Zero;
         IntPtr configTransferPak = IntPtr.Zero;
         IntPtr config64DD = IntPtr.Zero;
-        IntPtr configUIConsole = IntPtr.Zero;
 
         var exitCode = Config.ConfigOpenSection(StringToAnsiString("Core"), &configCore);
         if (exitCode != M64Error.M64ERR_SUCCESS) {
@@ -113,9 +110,21 @@ public static class Boot {
             return false;
         }
 
+        exitCode = Config.ConfigOpenSection(StringToAnsiString("CoreEvents"), &configCoreEvents);
+        if (exitCode != M64Error.M64ERR_SUCCESS) {
+            Logger.Error($"Failed to open 'CoreEvents' configuration section! Got error {exitCode}");
+            return false;
+        }
+
         exitCode = Config.ConfigOpenSection(StringToAnsiString("Video-General"), &configVideo);
         if (exitCode != M64Error.M64ERR_SUCCESS) {
             Logger.Error($"Failed to open 'Video-General' configuration section! Got Error {exitCode}");
+            return false;
+        }
+
+        exitCode = Config.ConfigOpenSection(StringToAnsiString("Video-GlideN64"), &configVideoGlideN64);
+        if (exitCode != M64Error.M64ERR_SUCCESS) {
+            Logger.Error($"Failed to open 'Video-GlideN64' configuration section! Got error {exitCode}");
             return false;
         }
 
@@ -131,60 +140,86 @@ public static class Boot {
             return false;
         }
 
-        exitCode = Config.ConfigOpenSection(StringToAnsiString("UI-Console"), &configUIConsole);
-        if (exitCode != M64Error.M64ERR_SUCCESS) {
-            Logger.Error($"Failed to open 'UI-Console' configuration section! Got Error {exitCode}");
-            return false;
-        }
-
         ConfigCore = configCore;
+        ConfigCoreEvents = configCoreEvents;
         ConfigVideo = configVideo;
+        ConfigVideoGlideN64 = configVideoGlideN64;
         ConfigTransferpak = configTransferPak;
         Config64DD = config64DD;
-        ConfigUIConsole = configUIConsole;
 
-        float configParamsVersion;
-        if (Config.ConfigGetParameter(ConfigUIConsole, versionString, M64Type.M64TYPE_FLOAT, (IntPtr)(&configParamsVersion), sizeof(float)) != M64Error.M64ERR_SUCCESS) {
-            Logger.Warning($"No version number in 'UI-Console' config section! Setting defaults.");
-            Config.ConfigDeleteSection(StringToAnsiString("UI-Console"));
-            Config.ConfigOpenSection(StringToAnsiString("UI-Console"), &configUIConsole);
-            ConfigUIConsole = configUIConsole;
-            saveConfig = true;
-        }
-        else if ((s32)configParamsVersion != (s32)CONFIG_PARAM_VERSION) {
-            Logger.Warning($"Incompatible version {configParamsVersion} in 'UI-Console' config section: current is {configParamsVersion}. Setting defaults.");
-            Config.ConfigDeleteSection(StringToAnsiString("UI-Console"));
-            Config.ConfigOpenSection(StringToAnsiString("UI-Console"), &configUIConsole);
-            saveConfig = true;
-        }
-        else if (CONFIG_PARAM_VERSION - configParamsVersion >= 0.0001f) {
-            float version = CONFIG_PARAM_VERSION;
-            Config.ConfigSetParameter(ConfigUIConsole, versionString, M64Type.M64TYPE_FLOAT, (IntPtr)(&version));
-            Logger.Info($"Updating parameter set version in 'UI-Console' config section to {version}");
-            saveConfig = true;
-        }
-
-        Config.ConfigSetDefaultInt(configCore, StringToAnsiString("ForceMemorySize"), 0, StringToAnsiString("Force the memory size to a specific size. 0 is off, 1 is 8 mb, 2 is 4 mb. Use this over DisableExtraMem for greater control."));
-
-        Config.ConfigSetDefaultFloat(ConfigUIConsole, versionString, CONFIG_PARAM_VERSION, StringToAnsiString("Config parameter set version number. Please don't change this version number."));
-        Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("PluginDir"), StringToAnsiString("./plugins"), StringToAnsiString("Directory in which to search for plugins"));
-        Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("VideoPlugin"), StringToAnsiString("mupen64plus-video-GLideN64.dll"), StringToAnsiString("Filename of video plugin"));
-        Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("AudioPlugin"), StringToAnsiString("mupen64plus-audio-sdl.dll"), StringToAnsiString("Filename of audio plugin"));
-        Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("InputPlugin"), StringToAnsiString("mupen64plus-input-sdl.dll"), StringToAnsiString("Filename of input plugin"));
-        Config.ConfigSetDefaultString(ConfigUIConsole, StringToAnsiString("RspPlugin"), StringToAnsiString("mupen64plus-rsp-hle.dll"), StringToAnsiString("Filename of RSP plugin"));
-
-        // GB shit we're gonna skip
-        // N64DD shit we're gonna skip
-
-        if (saveConfig) {
-            Config.ConfigSaveSection(StringToAnsiString("UI-Console"));
-        }
+        UpdateMupenConfig();
 
         return true;
     }
 
-    public static unsafe bool InitializeROM(string rom, ref IntPtr romPtr) {
-        string romPath = rom;
+    public static unsafe void UpdateMupenConfig() {
+        foreach (var (Name, Type, ValuePointer, _Name) in ModLoader64.Config.Core.GetConfigParameters()) {
+            Logger.Info($"Core: {_Name} {Type}");
+
+            if (ValuePointer != IntPtr.Zero) {
+                Config.ConfigSetParameter(ConfigCore, (char*)Name, Type, ValuePointer);
+                if (Type == M64Type.M64TYPE_STRING) {
+                    Marshal.FreeHGlobal(ValuePointer);
+                }
+            }
+            else {
+                Logger.Error($"\tFailed to parse value");
+            }
+
+            Marshal.FreeHGlobal(Name);
+        }
+
+        foreach (var (Name, Type, ValuePointer, _Name) in ModLoader64.Config.CoreEvents.GetConfigParameters()) {
+            Logger.Info($"CoreEvents: {_Name} {Type}");
+
+            if (ValuePointer != IntPtr.Zero) {
+                Config.ConfigSetParameter(ConfigCoreEvents, (char*)Name, Type, ValuePointer);
+                if (Type == M64Type.M64TYPE_STRING) {
+                    Marshal.FreeHGlobal(ValuePointer);
+                }
+            }
+            else {
+                Logger.Error($"\tFailed to parse value");
+            }
+
+            Marshal.FreeHGlobal(Name);
+        }
+
+        foreach (var (Name, Type, ValuePointer, _Name) in ModLoader64.Config.VideoGeneral.GetConfigParameters()) {
+            Logger.Info($"Video-General: {_Name} {Type}");
+
+            if (ValuePointer != IntPtr.Zero) {
+                Config.ConfigSetParameter(ConfigVideo, (char*)Name, Type, ValuePointer);
+                if (Type == M64Type.M64TYPE_STRING) {
+                    Marshal.FreeHGlobal(ValuePointer);
+                }
+            }
+            else {
+                Logger.Error($"\tFailed to parse value");
+            }
+
+            Marshal.FreeHGlobal(Name);
+        }
+
+        foreach (var (Name, Type, ValuePointer, _Name) in ModLoader64.Config.GLN64.GetConfigParameters()) {
+            Logger.Info($"Video-GlideN64: {_Name} {Type}");
+
+            if (ValuePointer != IntPtr.Zero) {
+                Config.ConfigSetParameter(ConfigVideoGlideN64, (char*)Name, Type, ValuePointer);
+                if (Type == M64Type.M64TYPE_STRING) {
+                    Marshal.FreeHGlobal(ValuePointer);
+                }
+            }
+            else {
+                Logger.Error($"\tFailed to parse value");
+            }
+
+            Marshal.FreeHGlobal(Name);
+        }
+    }
+
+    public static unsafe bool InitializeROM(ref IntPtr romPtr) {
+        string romPath = "oot.z64";
         byte[] romData = File.ReadAllBytes(romPath);
         romPtr = Marshal.AllocHGlobal(romData.Length);
         if (romPtr == IntPtr.Zero) {
@@ -205,48 +240,48 @@ public static class Boot {
         M64PluginType type = M64PluginType.M64PLUGIN_NULL;
         s32 version = 0;
         char* pluginName = (char*)IntPtr.Zero;
-        char* pluginDir = Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("PluginDir"));
+        char* pluginDir = Config.ConfigGetParamString(ConfigCore, StringToAnsiString("PluginDir"));
 
         List<IntPtr> pluginPaths = new List<IntPtr> {
-            (IntPtr)Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("VideoPlugin")),
-            (IntPtr)Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("AudioPlugin")),
-            (IntPtr)Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("InputPlugin")),
-            (IntPtr)Config.ConfigGetParamString(ConfigUIConsole, StringToAnsiString("RspPlugin"))
+            (IntPtr)Config.ConfigGetParamString(ConfigCore, StringToAnsiString("VideoPlugin")),
+            (IntPtr)Config.ConfigGetParamString(ConfigCore, StringToAnsiString("AudioPlugin")),
+            (IntPtr)Config.ConfigGetParamString(ConfigCore, StringToAnsiString("InputPlugin")),
+            (IntPtr)Config.ConfigGetParamString(ConfigCore, StringToAnsiString("RspPlugin"))
         };
 
         foreach (var _path in pluginPaths) {
             string path = $"{Marshal.PtrToStringAnsi((IntPtr)pluginDir)}/{Marshal.PtrToStringAnsi(_path)}";
-            IntPtr handle = Kernel32.LoadLibrary(path);
+            IntPtr handle = Natives.LoadLibrary(path);
             if (handle == IntPtr.Zero) {
                 Logger.Error($"Plugin {path} failed to load!");
-                Kernel32.FreeLibrary(handle);
+                Natives.FreeLibrary(handle);
                 continue;
             }
 
-            IntPtr pfn_PluginGetVersion = Kernel32.GetProcAddress(handle, "PluginGetVersion");
+            IntPtr pfn_PluginGetVersion = Natives.GetProcAddress(handle, "PluginGetVersion");
             if (pfn_PluginGetVersion == IntPtr.Zero) {
                 Logger.Error($"Plugin failed to locate PluginGetVersion for {path}!");
                 continue;
             }
 
-            IntPtr pfn_PluginStartup = Kernel32.GetProcAddress(handle, "PluginStartup");
+            IntPtr pfn_PluginStartup = Natives.GetProcAddress(handle, "PluginStartup");
             if (pfn_PluginStartup == IntPtr.Zero) {
                 Logger.Error($"Plugin failed to locate PluginStartup for {path}!");
                 continue;
             }
 
-            PluginGetVersionDelegate PluginGetVersion = Marshal.GetDelegateForFunctionPointer<PluginGetVersionDelegate>(pfn_PluginGetVersion);
+            Mupen64plus.Common.PluginGetVersionDelegate PluginGetVersion = Marshal.GetDelegateForFunctionPointer<Mupen64plus.Common.PluginGetVersionDelegate>(pfn_PluginGetVersion);
             if (PluginGetVersion == null) {
                 Logger.Error($"Plugin failed to locate PluginGetVersionDelegate for {path}!");
-                Kernel32.FreeLibrary(handle);
+                Natives.FreeLibrary(handle);
                 continue;
             }
             PluginGetVersion(&type, (IntPtr)(&version), IntPtr.Zero, &pluginName, IntPtr.Zero);
 
-            PluginStartupDelegate PluginStartup = Marshal.GetDelegateForFunctionPointer<PluginStartupDelegate>(pfn_PluginStartup);
+            Mupen64plus.Common.PluginStartupDelegate PluginStartup = Marshal.GetDelegateForFunctionPointer<Mupen64plus.Common.PluginStartupDelegate>(pfn_PluginStartup);
             if (PluginStartup == null) {
                 Logger.Error($"Plugin failed to locate PluginStartupDelegate for {path}!");
-                Kernel32.FreeLibrary(handle);
+                Natives.FreeLibrary(handle);
                 continue;
             }
             PluginStartup(CoreLibraryHandle, (IntPtr)pluginName, DebugCallback);
@@ -254,7 +289,7 @@ public static class Boot {
 
             if (Frontend.CoreAttachPlugin(type, handle) != M64Error.M64ERR_SUCCESS) {
                 Logger.Error($"Plugin {path} failed to load!");
-                Kernel32.FreeLibrary(handle);
+                Natives.FreeLibrary(handle);
                 continue;
             }
 
@@ -272,7 +307,11 @@ public static class Boot {
 
     public static void ShutdownPlugins() {
         foreach (var handle in LoadedPlugins) {
-            Kernel32.FreeLibrary(handle);
+            Natives.FreeLibrary(handle);
+        }
+
+        foreach (var handle in AllocatedStrings) {
+            Marshal.FreeHGlobal(handle);
         }
     }
 }

@@ -17,9 +17,9 @@ public class ModLoader64  : IBinding
 {
     public static bool CoreWasInitialized = false;
     public static bool RomWasLoaded = false;
+    public static Configuration Config = new Configuration();
 
-    public static IntPtr RomPtr = IntPtr.Zero;
-    public static string rom = "oot.z64";
+    private static IntPtr romPtr = IntPtr.Zero;
 
     /// <summary>
     /// Initializes Mupen64plus
@@ -38,7 +38,7 @@ public class ModLoader64  : IBinding
             return false;
         }
 
-        if (Boot.InitializeROM(rom, ref RomPtr) == false) {
+        if (Boot.InitializeROM(ref romPtr) == false) {
             Logger.Error("InitializeROM failed!");
             return false;
         }
@@ -65,6 +65,11 @@ public class ModLoader64  : IBinding
     public static s32 Main(string[] args) {
         s32 exit = 0;
         Logger.Info("Hello, world!");
+
+        if (Configuration.Load(out Config)) {
+            Configuration.Save(ref Config);
+        }
+
         if (!Initialize()) {
             exit = 1;
         }
@@ -73,8 +78,8 @@ public class ModLoader64  : IBinding
 
 
         Boot.ShutdownPlugins();
-        if (RomPtr != IntPtr.Zero) {
-            Marshal.FreeHGlobal(RomPtr);
+        if (romPtr != IntPtr.Zero) {
+            Marshal.FreeHGlobal(romPtr);
         }
 
         if (CoreWasInitialized) {
@@ -83,6 +88,7 @@ public class ModLoader64  : IBinding
             }
             Frontend.CoreShutdown();
         }
+        Configuration.Save(ref Config);
 
         return exit;
     }

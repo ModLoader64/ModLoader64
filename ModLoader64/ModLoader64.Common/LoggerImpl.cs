@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ModLoader64.Common;
+﻿namespace ModLoader64.Common;
 
 /// <summary>
 /// Implementation of all other loggers

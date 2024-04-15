@@ -1,5 +1,4 @@
-﻿using System;
-using ModLoader64.Common;
+﻿using ModLoader64.Common;
 
 namespace ModLoader64.Mupen64plus;
 
