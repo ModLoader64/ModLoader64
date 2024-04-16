@@ -26,13 +26,16 @@ public static class Natives {
     /// Static constructor
     /// </summary>
     static Natives() {
-        Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location)));
+        string oldPath = Directory.GetCurrentDirectory();
+        string path = Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));  
+        Directory.SetCurrentDirectory(path);
         MUPEN_LIBRARY = TransmuteLibraryName("mupen64plus");
         MupenLibraryHandle = LoadLibrary(MUPEN_LIBRARY);
         if (MupenLibraryHandle == IntPtr.Zero)
         {
             throw new Exception("Failed to load mupen64plus library!");
         }
+        Directory.SetCurrentDirectory(oldPath);
     }
 
     /// <summary>
@@ -91,6 +94,7 @@ public static class Natives {
     /// </summary>
     public static IntPtr LoadLibrary(string dllToLoad) {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+            Console.WriteLine($"Load Library Windows: {dllToLoad}");
             return WindowsLoadLibrary(dllToLoad);
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
@@ -116,6 +120,7 @@ public static class Natives {
     /// </summary>
     public static IntPtr GetProcAddress(IntPtr hModule, string procedureName) {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+            Console.WriteLine($"GetProcAddress: {procedureName}");
             return WindowsGetProcAddress(hModule, procedureName);
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
