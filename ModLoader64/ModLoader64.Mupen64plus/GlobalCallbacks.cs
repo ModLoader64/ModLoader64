@@ -1,4 +1,5 @@
-﻿using ModLoader64.Core;
+﻿using ModLoader.API;
+using ModLoader64.Core;
 using System.Runtime.InteropServices;
 
 namespace ModLoader64.Mupen64plus;
@@ -25,6 +26,9 @@ public static class GlobalCallbacks {
     public static InstallCodeCallbackDelegate InstallCodeCallback;
     public static UninstallCodeCallbackDelegate UninstallCodeCallback;
     #endregion
+    // Binding event objects.
+    private static readonly EventNewVi viEvent = new EventNewVi();
+    private static readonly EventNewFrame frameEvent = new EventNewFrame(0);
 
     static GlobalCallbacks() {
         VISetCallback = Natives.GetDelegateInstance<VISetCallbackDelegate>("VISetCallback");
@@ -34,10 +38,15 @@ public static class GlobalCallbacks {
         UninstallCodeCallback = Natives.GetDelegateInstance<UninstallCodeCallbackDelegate>("UninstallCodeCallback");
     }
 
-    public static unsafe void OnFrame(int FrameCount) {
+    public static unsafe void OnFrame(int FrameCount)
+    {
+        frameEvent.frame = FrameCount;
+        PubEventBus.bus.PushEvent(frameEvent);
     }
 
-    public static void OnVI() {
+    public static void OnVI()
+    {
+        PubEventBus.bus.PushEvent(viEvent);
     }
 
     public static void OnReset(bool HardReset) {
