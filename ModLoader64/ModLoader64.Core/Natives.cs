@@ -8,7 +8,7 @@ public static class Natives {
     public const string NixExtension = ".so";
 
     private const string WindowsLibrary = "kernel32.dll";
-    private const string LinuxLibrary = "libdl.so";
+    private const string LinuxLibrary = "libdl.so.2";
     private const string OsxLibrary = "libdl.dylib"; // TODO: OSX
 
     #region mupen64plus
